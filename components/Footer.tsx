@@ -166,10 +166,10 @@ export function Footer() {
               <li className="flex items-start gap-2.5 text-sm text-ink">
                 <MapPin className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-leaf-600" />
                 <span>
-                  Хмельницький
+                  проспект Миру, 58/3
                   <br />
                   <span className="text-xs text-ink-soft">
-                    та Хмельницька область
+                    Хмельницький, 29027
                   </span>
                 </span>
               </li>

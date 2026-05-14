@@ -20,8 +20,10 @@ export function LocalBusinessJsonLd() {
     email: COMPANY.email,
     address: {
       "@type": "PostalAddress",
+      streetAddress: "проспект Миру, 58/3",
       addressLocality: COMPANY.city,
       addressRegion: COMPANY.region,
+      postalCode: "29027",
       addressCountry: "UA",
     },
     geo: {
