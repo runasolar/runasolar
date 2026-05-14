@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+.env*.local
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+
+# Source PNGs (originals from Higgsfield) — converted to webp in same dir
+public/hero/*.png
