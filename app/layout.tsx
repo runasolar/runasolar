@@ -8,6 +8,7 @@ import {
   OrganizationJsonLd,
   WebSiteJsonLd,
 } from "@/components/JsonLd";
+import { SITE_URL } from "@/lib/site";
 
 const display = Unbounded({
   subsets: ["latin", "cyrillic"],
@@ -24,7 +25,7 @@ const sans = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://runasolar.com.ua"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "RUNA SOLAR — Сонячні станції під ключ у Хмельницькому",
     template: "%s | RUNA SOLAR",
@@ -41,12 +42,12 @@ export const metadata: Metadata = {
     "RUNA SOLAR",
   ],
   alternates: {
-    canonical: "https://runasolar.com.ua",
+    canonical: SITE_URL,
   },
   openGraph: {
     type: "website",
     locale: "uk_UA",
-    url: "https://runasolar.com.ua",
+    url: SITE_URL,
     siteName: "RUNA SOLAR",
     title: "RUNA SOLAR — Сонячні станції, що не вимикаються разом зі світлом",
     description:

@@ -1,6 +1,5 @@
 import { COMPANY } from "@/lib/data";
-
-const BASE_URL = "https://runasolar.com.ua";
+import { SITE_URL as BASE_URL } from "@/lib/site";
 
 // LocalBusiness schema — critical for Google Maps / Local Pack ranking
 // for queries like "сонячні станції Хмельницький"
