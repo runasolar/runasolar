@@ -22,6 +22,7 @@ import { COMPANY } from "@/lib/data";
 import { Reveal } from "./Reveal";
 import { Magnetic } from "./Magnetic";
 import { SectionEyebrow } from "./SectionEyebrow";
+import { trackEvent } from "./Analytics";
 
 const TYPES = [
   { id: "home", label: "Дім", icon: Home },
@@ -89,9 +90,11 @@ export function Contact() {
         throw new Error(data.error ?? "Network error");
       }
       setState("ok");
+      trackEvent("lead_submit", { source: "contact", lead_type: type });
     } catch (err) {
       setState("error");
       setErrorMsg(err instanceof Error ? err.message : "Не вдалося надіслати");
+      trackEvent("lead_submit_failed", { source: "contact" });
     }
   };
 

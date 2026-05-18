@@ -3,6 +3,7 @@ import { Inter, Unbounded } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CursorGlow } from "@/components/CursorGlow";
+import { Analytics } from "@/components/Analytics";
 import {
   LocalBusinessJsonLd,
   WebSiteJsonLd,
@@ -125,6 +126,7 @@ export default function RootLayout({
       <body>
         <SmoothScroll />
         <CursorGlow />
+        <Analytics />
         {children}
       </body>
     </html>

@@ -28,6 +28,7 @@ import {
 import { Reveal } from "./Reveal";
 import { SectionHeader } from "./SectionHeader";
 import { COMPANY } from "@/lib/data";
+import { trackEvent } from "./Analytics";
 
 type StepId = "location" | "goal" | "reason" | "placement" | "form";
 
@@ -162,9 +163,15 @@ export function CalculatorQuiz() {
         throw new Error(data.error ?? "Network error");
       }
       setState("ok");
+      trackEvent("lead_submit", {
+        source: "quiz",
+        location: answers.location,
+        goal: answers.goal,
+      });
     } catch (err) {
       setState("error");
       setErrorMsg(err instanceof Error ? err.message : "Не вдалося надіслати");
+      trackEvent("lead_submit_failed", { source: "quiz" });
     }
   };
 
