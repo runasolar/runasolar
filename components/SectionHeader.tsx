@@ -64,9 +64,10 @@ export function SectionHeader({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "0px" }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className={`h-display text-[clamp(2.25rem,5vw,4.5rem)] font-semibold leading-[1.02] tracking-tight text-balance ${
+            className={`h-display text-[clamp(1.625rem,5vw,4.5rem)] font-semibold leading-[1.05] tracking-tight text-balance hyphens-auto ${
               isDark ? "text-bg" : "text-ink"
             }`}
+            lang="uk"
           >
             {title}
           </motion.h2>
