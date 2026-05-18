@@ -105,7 +105,6 @@ function ServiceCard({
             src={img}
             alt={`${service.title} — ${service.description.split(".")[0]}`}
             fill
-            priority
             sizes="(max-width: 1024px) 100vw, 25vw"
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />

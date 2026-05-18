@@ -21,20 +21,45 @@ export function LocalBusinessJsonLd() {
       (TESTIMONIALS.reduce((s, t) => s + t.rating, 0) / reviewCount) * 10
     ) / 10;
 
+  // LocalBusiness IS-A Organization (Schema.org hierarchy) — declaring both
+  // @types on one node prevents Google from auto-merging two separate
+  // entities that share name/logo into a single display node with
+  // duplicated url/logo/sameAs properties.
   const data = {
     "@context": "https://schema.org",
-    "@type": ["LocalBusiness", "ElectricalContractor"],
+    "@type": ["LocalBusiness", "ElectricalContractor", "Organization"],
     "@id": `${BASE_URL}/#business`,
     name: COMPANY.name,
     alternateName: COMPANY.shortName,
+    legalName: COMPANY.name,
     description:
       "Монтаж гібридних сонячних електростанцій з резервом під ключ. Tier-1 обладнання, гарантія до 25 років, документи 'Зеленого тарифу'.",
     slogan: COMPANY.tagline,
     url: BASE_URL,
-    logo: `${BASE_URL}/icon.svg`,
+    foundingDate: "2021",
+    logo: {
+      "@type": "ImageObject",
+      url: `${BASE_URL}/icon.svg`,
+      width: 192,
+      height: 192,
+    },
     image: [`${BASE_URL}/opengraph-image`],
     telephone: COMPANY.phonesRaw[0],
     email: COMPANY.email,
+    knowsAbout: [
+      "Сонячна енергетика",
+      "Гібридні сонячні електростанції",
+      "Накопичувачі енергії LiFePO4",
+      "Системи безперебійного живлення",
+      "Зелений тариф",
+    ],
+    contactPoint: COMPANY.phonesRaw.map((phone, i) => ({
+      "@type": "ContactPoint",
+      telephone: phone,
+      contactType: i === 0 ? "sales" : "customer service",
+      availableLanguage: ["Ukrainian", "Russian"],
+      areaServed: "UA",
+    })),
     address: {
       "@type": "PostalAddress",
       streetAddress: COMPANY.addressStreet,
@@ -119,44 +144,6 @@ export function LocalBusinessJsonLd() {
   return renderJsonLd(data);
 }
 
-/* ── Organization (brand entity) + contact ───────────────────────── */
-
-export function OrganizationJsonLd() {
-  const data = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": `${BASE_URL}/#organization`,
-    name: COMPANY.name,
-    legalName: COMPANY.name,
-    url: BASE_URL,
-    logo: {
-      "@type": "ImageObject",
-      url: `${BASE_URL}/icon.svg`,
-      width: 192,
-      height: 192,
-    },
-    foundingDate: "2021",
-    areaServed: "UA",
-    knowsAbout: [
-      "Сонячна енергетика",
-      "Гібридні сонячні електростанції",
-      "Накопичувачі енергії LiFePO4",
-      "Системи безперебійного живлення",
-      "Зелений тариф",
-    ],
-    contactPoint: COMPANY.phonesRaw.map((phone, i) => ({
-      "@type": "ContactPoint",
-      telephone: phone,
-      contactType: i === 0 ? "sales" : "customer service",
-      availableLanguage: ["Ukrainian", "Russian"],
-      areaServed: "UA",
-    })),
-    sameAs: [COMPANY.instagram, COMPANY.tiktok],
-  };
-
-  return renderJsonLd(data);
-}
-
 /* ── WebSite ─────────────────────────────────────────────────────── */
 
 export function WebSiteJsonLd() {
@@ -167,7 +154,7 @@ export function WebSiteJsonLd() {
     url: BASE_URL,
     name: COMPANY.name,
     inLanguage: "uk-UA",
-    publisher: { "@id": `${BASE_URL}/#organization` },
+    publisher: { "@id": `${BASE_URL}/#business` },
   };
 
   return renderJsonLd(data);

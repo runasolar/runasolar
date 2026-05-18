@@ -117,7 +117,7 @@ export function Cases() {
                   data-case-card
                   className="w-[92%] shrink-0 snap-start sm:w-[60%] lg:w-[calc((100%-2.5rem)/3)]"
                 >
-                  <CaseCard c={c} index={i} />
+                  <CaseCard c={c} />
                 </li>
               ))}
             </ul>
@@ -179,13 +179,7 @@ export function Cases() {
 }
 
 /* ── Project card ────────────────────────────────────────────────── */
-function CaseCard({
-  c,
-  index,
-}: {
-  c: (typeof CASES)[number];
-  index: number;
-}) {
+function CaseCard({ c }: { c: (typeof CASES)[number] }) {
   const isBusiness = c.type === "Бізнес";
 
   return (
@@ -202,7 +196,6 @@ function CaseCard({
           fill
           sizes="(max-width: 640px) 85vw, (max-width: 1024px) 58vw, 33vw"
           className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-          priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/15 to-transparent" />
 

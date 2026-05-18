@@ -5,7 +5,6 @@ import { SmoothScroll } from "@/components/SmoothScroll";
 import { CursorGlow } from "@/components/CursorGlow";
 import {
   LocalBusinessJsonLd,
-  OrganizationJsonLd,
   WebSiteJsonLd,
   WebPageJsonLd,
   FAQJsonLd,
@@ -117,7 +116,6 @@ export default function RootLayout({
     <html lang="uk" className={`${display.variable} ${sans.variable}`}>
       <head>
         <LocalBusinessJsonLd />
-        <OrganizationJsonLd />
         <WebSiteJsonLd />
         <WebPageJsonLd />
         <BreadcrumbJsonLd />

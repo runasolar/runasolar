@@ -16,13 +16,13 @@ import { Magnetic } from "./Magnetic";
 // Loaded via Next/Image; domain whitelisted in next.config.mjs.
 const SLIDE_IMAGES = [
   // Large solar panel against open sky — cinematic hero shot
-  "https://images.unsplash.com/photo-1679046410011-b6bf7ce71f22?w=2400&q=80&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1679046410011-b6bf7ce71f22?w=1600&q=75&auto=format&fit=crop",
   // Close-up solar panels on rooftop — texture, blue tones
-  "https://images.unsplash.com/photo-1745187946672-2c1d8cf26a2b?w=2400&q=80&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1745187946672-2c1d8cf26a2b?w=1600&q=75&auto=format&fit=crop",
   // Aerial solar farm in field — commercial / utility scale
-  "https://images.unsplash.com/photo-1756913454165-246d96a20b67?w=2400&q=80&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1756913454165-246d96a20b67?w=1600&q=75&auto=format&fit=crop",
   // Solar farm with rows of panels — industrial / agro
-  "https://images.unsplash.com/photo-1680355065203-43ad84bb6e69?w=2400&q=80&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1680355065203-43ad84bb6e69?w=1600&q=75&auto=format&fit=crop",
 ];
 
 const HERO = {
@@ -83,7 +83,8 @@ export function HeroSlider() {
               alt=""
               aria-hidden
               fill
-              priority
+              priority={i === 0}
+              loading={i === 0 ? undefined : "eager"}
               sizes="100vw"
               className="object-cover"
             />
@@ -144,7 +145,7 @@ export function HeroSlider() {
                 <span className="text-bg">
                   {String(active + 1).padStart(2, "0")}
                 </span>
-                <span className="text-bg/40">
+                <span className="text-bg/70">
                   /{String(SLIDE_IMAGES.length).padStart(2, "0")}
                 </span>
               </div>
