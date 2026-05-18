@@ -4,6 +4,7 @@ import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CursorGlow } from "@/components/CursorGlow";
 import { Analytics } from "@/components/Analytics";
+import { CookieBanner } from "@/components/CookieBanner";
 import {
   LocalBusinessJsonLd,
   WebSiteJsonLd,
@@ -128,6 +129,7 @@ export default function RootLayout({
         <CursorGlow />
         <Analytics />
         {children}
+        <CookieBanner />
       </body>
     </html>
   );

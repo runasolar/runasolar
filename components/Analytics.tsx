@@ -1,15 +1,20 @@
 "use client";
 
 import Script from "next/script";
+import { useCookieConsent } from "./CookieBanner";
 
 /**
- * Google Analytics 4 integration.
- * Renders nothing if NEXT_PUBLIC_GA_ID is not configured — so dev and
- * preview deployments stay clean while production tracks normally.
+ * Google Analytics 4 integration — gated by cookie consent.
+ * - Renders nothing if NEXT_PUBLIC_GA_ID is not configured.
+ * - Renders nothing until the visitor accepts cookies (GDPR-friendly).
+ * - Reacts live to consent changes: clicking "Accept" loads gtag without
+ *   a page reload.
  */
 export function Analytics() {
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
-  if (!gaId) return null;
+  const consent = useCookieConsent();
+
+  if (!gaId || consent !== "accepted") return null;
 
   return (
     <>

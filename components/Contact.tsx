@@ -59,6 +59,7 @@ export function Contact() {
   const [type, setType] = useState<(typeof TYPES)[number]["id"]>("home");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [bill, setBill] = useState("");
   const [agree, setAgree] = useState(true);
   const [state, setState] = useState<"idle" | "loading" | "ok" | "error">("idle");
@@ -66,7 +67,9 @@ export function Contact() {
 
   const nameValid = name.trim().length >= 2;
   const phoneValid = isValidPhone(phone);
-  const canSubmit = nameValid && phoneValid && agree && state !== "loading";
+  const emailValid = email === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const canSubmit =
+    nameValid && phoneValid && emailValid && agree && state !== "loading";
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,6 +84,7 @@ export function Contact() {
           source: "contact",
           name: name.trim(),
           phone,
+          email: email.trim() || undefined,
           type,
           bill: bill || undefined,
         }),
@@ -348,6 +352,28 @@ export function Contact() {
                         placeholder="+380 (__) ___-__-__"
                         autoComplete="tel"
                         className="h-14 w-full rounded-2xl border border-line bg-bg px-5 text-base tabular-nums outline-none transition-colors focus:border-leaf-600"
+                      />
+                    </Field>
+
+                    {/* Email — optional, used only to send confirmation */}
+                    <Field
+                      label="Email"
+                      htmlFor="c-email"
+                      valid={emailValid && email.length > 0}
+                      hint={
+                        email.length > 0 && !emailValid
+                          ? "Перевірте формат: name@domain.com"
+                          : "Опційно — надішлемо підтвердження на пошту"
+                      }
+                    >
+                      <input
+                        id="c-email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="ім'я@приклад.ua"
+                        autoComplete="email"
+                        className="h-14 w-full rounded-2xl border border-line bg-bg px-5 text-base outline-none transition-colors focus:border-leaf-600"
                       />
                     </Field>
 

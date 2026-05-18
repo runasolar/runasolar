@@ -120,18 +120,20 @@ export function CalculatorQuiz() {
   const [answers, setAnswers] = useState<Answers>({});
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const total = STEPS.length;
   const current = STEPS[step];
 
+  const emailValid = email === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const canAdvance = useMemo(() => {
     if (current.id === "form") {
-      return name.trim().length >= 2 && isValidPhone(phone);
+      return name.trim().length >= 2 && isValidPhone(phone) && emailValid;
     }
     return Boolean(answers[current.id as keyof Answers]);
-  }, [current, answers, name, phone]);
+  }, [current, answers, name, phone, emailValid]);
 
   const next = () => {
     if (!canAdvance) return;
@@ -152,6 +154,7 @@ export function CalculatorQuiz() {
           source: "quiz",
           name: name.trim(),
           phone,
+          email: email.trim() || undefined,
           location: answers.location,
           goal: answers.goal,
           reason: answers.reason,
@@ -261,8 +264,11 @@ export function CalculatorQuiz() {
                         <FormStep
                           name={name}
                           phone={phone}
+                          email={email}
+                          emailValid={emailValid}
                           onName={setName}
                           onPhone={(v) => setPhone(formatPhone(v))}
+                          onEmail={setEmail}
                           recommendedKw={recommendedKw}
                           state={state}
                           errorMsg={errorMsg}
@@ -380,8 +386,11 @@ function OptionsGrid({
 function FormStep({
   name,
   phone,
+  email,
+  emailValid,
   onName,
   onPhone,
+  onEmail,
   recommendedKw,
   state,
   errorMsg,
@@ -389,8 +398,11 @@ function FormStep({
 }: {
   name: string;
   phone: string;
+  email: string;
+  emailValid: boolean;
   onName: (v: string) => void;
   onPhone: (v: string) => void;
+  onEmail: (v: string) => void;
   recommendedKw: number;
   state: "idle" | "loading" | "ok" | "error";
   errorMsg: string | null;
@@ -442,6 +454,26 @@ function FormStep({
           autoComplete="tel"
           className="mt-2 h-14 w-full rounded-2xl border border-line bg-bg px-5 text-base tabular-nums outline-none transition-colors focus:border-leaf-600"
         />
+      </div>
+
+      <div>
+        <label htmlFor="q-email" className="text-sm font-medium text-ink">
+          Email <span className="text-ink-soft">(опційно)</span>
+        </label>
+        <input
+          id="q-email"
+          type="email"
+          value={email}
+          onChange={(e) => onEmail(e.target.value)}
+          placeholder="ім'я@приклад.ua"
+          autoComplete="email"
+          className="mt-2 h-14 w-full rounded-2xl border border-line bg-bg px-5 text-base outline-none transition-colors focus:border-leaf-600"
+        />
+        <p className="mt-2 text-xs text-ink-soft">
+          {email.length > 0 && !emailValid
+            ? "Перевірте формат: name@domain.com"
+            : "Надішлемо підтвердження на пошту"}
+        </p>
       </div>
 
       <button
