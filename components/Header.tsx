@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, Phone, X, Sun } from "lucide-react";
+import { Menu, Phone, X } from "lucide-react";
 import { NAV } from "@/lib/data";
 import { PhonePopup } from "./PhonePopup";
 
@@ -22,13 +23,19 @@ export function Header() {
           <div
             className="mx-auto flex items-center justify-between gap-4 rounded-full border border-line bg-bg px-3 py-2 shadow-soft lg:px-4 lg:py-2.5"
           >
-            <a href="#top" className="flex shrink-0 items-center gap-2 pl-1">
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-leaf-600 text-bg lg:h-9 lg:w-9">
-                <Sun className="h-4 w-4" strokeWidth={2.5} />
-              </span>
-              <span className="h-display whitespace-nowrap text-sm font-semibold tracking-tight text-ink lg:text-base">
-                RUNA <span className="text-leaf-600">SOLAR</span>
-              </span>
+            <a
+              href="#top"
+              className="flex shrink-0 items-center pl-1"
+              aria-label="RUNA SOLAR — на головну"
+            >
+              <Image
+                src="/logo.png"
+                alt="RUNA SOLAR"
+                width={120}
+                height={40}
+                priority
+                className="h-9 w-auto lg:h-10"
+              />
             </a>
 
             <nav className="hidden items-center gap-0.5 lg:flex">
@@ -87,7 +94,13 @@ export function Header() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between">
-                <span className="h-display font-semibold">RUNA SOLAR</span>
+                <Image
+                  src="/logo.png"
+                  alt="RUNA SOLAR"
+                  width={120}
+                  height={40}
+                  className="h-10 w-auto"
+                />
                 <button
                   onClick={() => setOpen(false)}
                   aria-label="Закрити"

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
-  Sun,
   Instagram,
   Music2,
   Mail,
@@ -51,13 +51,18 @@ export function Footer() {
         <div className="grid gap-10 pt-16 lg:grid-cols-12 lg:gap-12 lg:pt-20">
           {/* Column 1: brand + description + socials + alt channels */}
           <div className="lg:col-span-5">
-            <a href="#top" className="inline-flex items-center gap-2.5">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-leaf-600 text-bg">
-                <Sun className="h-4.5 w-4.5" strokeWidth={2.5} />
-              </span>
-              <span className="h-display text-lg font-semibold tracking-tight">
-                RUNA <span className="text-leaf-600">SOLAR</span>
-              </span>
+            <a
+              href="#top"
+              className="inline-flex items-center"
+              aria-label="RUNA SOLAR — на головну"
+            >
+              <Image
+                src="/logo.png"
+                alt="RUNA SOLAR"
+                width={140}
+                height={48}
+                className="h-12 w-auto"
+              />
             </a>
 
             <p className="mt-5 max-w-sm text-base text-ink-muted text-pretty">
