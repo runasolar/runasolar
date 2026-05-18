@@ -1,28 +1,46 @@
-import { COMPANY } from "@/lib/data";
+import { COMPANY, SERVICES, FAQ, TESTIMONIALS } from "@/lib/data";
 import { SITE_URL as BASE_URL } from "@/lib/site";
 
-// LocalBusiness schema — critical for Google Maps / Local Pack ranking
-// for queries like "сонячні станції Хмельницький"
+/* ── Helpers ──────────────────────────────────────────────────────── */
+
+function renderJsonLd(data: unknown) {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
+/* ── LocalBusiness — critical for Local Pack / Google Maps ───────── */
+
 export function LocalBusinessJsonLd() {
+  const reviewCount = TESTIMONIALS.length;
+  const avgRating =
+    Math.round(
+      (TESTIMONIALS.reduce((s, t) => s + t.rating, 0) / reviewCount) * 10
+    ) / 10;
+
   const data = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": ["LocalBusiness", "ElectricalContractor"],
     "@id": `${BASE_URL}/#business`,
     name: COMPANY.name,
     alternateName: COMPANY.shortName,
     description:
       "Монтаж гібридних сонячних електростанцій з резервом під ключ. Tier-1 обладнання, гарантія до 25 років, документи 'Зеленого тарифу'.",
+    slogan: COMPANY.tagline,
     url: BASE_URL,
     logo: `${BASE_URL}/icon.svg`,
-    image: `${BASE_URL}/og-image.jpg`,
+    image: [`${BASE_URL}/opengraph-image`],
     telephone: COMPANY.phonesRaw[0],
     email: COMPANY.email,
     address: {
       "@type": "PostalAddress",
-      streetAddress: "проспект Миру, 58/3",
-      addressLocality: COMPANY.city,
+      streetAddress: COMPANY.addressStreet,
+      addressLocality: COMPANY.addressCity,
       addressRegion: COMPANY.region,
-      postalCode: "29027",
+      postalCode: COMPANY.postalCode,
       addressCountry: "UA",
     },
     geo: {
@@ -30,32 +48,15 @@ export function LocalBusinessJsonLd() {
       latitude: 49.4229,
       longitude: 26.9871,
     },
+    hasMap: COMPANY.mapsUrl,
     areaServed: [
-      {
-        "@type": "AdministrativeArea",
-        name: "Хмельницька область",
-      },
-      {
-        "@type": "AdministrativeArea",
-        name: "Тернопільська область",
-      },
-      {
-        "@type": "AdministrativeArea",
-        name: "Вінницька область",
-      },
-      {
-        "@type": "AdministrativeArea",
-        name: "Рівненська область",
-      },
-      {
-        "@type": "AdministrativeArea",
-        name: "Житомирська область",
-      },
-      {
-        "@type": "AdministrativeArea",
-        name: "Чернівецька область",
-      },
-    ],
+      "Хмельницька область",
+      "Тернопільська область",
+      "Вінницька область",
+      "Рівненська область",
+      "Житомирська область",
+      "Чернівецька область",
+    ].map((name) => ({ "@type": "AdministrativeArea", name })),
     serviceArea: {
       "@type": "GeoCircle",
       geoMidpoint: {
@@ -63,7 +64,7 @@ export function LocalBusinessJsonLd() {
         latitude: 49.4229,
         longitude: 26.9871,
       },
-      geoRadius: 170000, // meters
+      geoRadius: 170000,
     },
     openingHoursSpecification: [
       {
@@ -82,64 +83,82 @@ export function LocalBusinessJsonLd() {
     ],
     sameAs: [COMPANY.instagram, COMPANY.tiktok],
     priceRange: "$$",
-    makesOffer: [
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Сонячна станція для дому під ключ",
-          description:
-            "Гібридна СЕС 5–35 кВт з акумулятором для приватних будинків.",
-        },
+    currenciesAccepted: "UAH, USD",
+    paymentAccepted: "Готівка, безготівковий розрахунок, розстрочка",
+    knowsLanguage: ["uk", "en"],
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: avgRating.toFixed(1),
+      reviewCount,
+      bestRating: 5,
+      worstRating: 1,
+    },
+    review: TESTIMONIALS.map((t) => ({
+      "@type": "Review",
+      author: { "@type": "Person", name: t.name },
+      reviewRating: {
+        "@type": "Rating",
+        ratingValue: t.rating,
+        bestRating: 5,
       },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Сонячна станція для бізнесу",
-          description:
-            "Промислові гібридні СЕС 15–50 кВт з SCADA-моніторингом.",
-        },
+      reviewBody: t.text,
+      datePublished: t.date,
+      itemReviewed: { "@id": `${BASE_URL}/#business` },
+    })),
+    makesOffer: SERVICES.map((s) => ({
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name: s.title,
+        description: s.description,
       },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Резервне живлення",
-          description:
-            "Акумуляторні системи LiFePO4 з автоматичним переключенням за 10 мс.",
-        },
-      },
-    ],
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+    })),
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return renderJsonLd(data);
 }
 
-// Organization + WebSite — додаткові схеми для брендових запитів
+/* ── Organization (brand entity) + contact ───────────────────────── */
+
 export function OrganizationJsonLd() {
   const data = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": `${BASE_URL}/#organization`,
     name: COMPANY.name,
+    legalName: COMPANY.name,
     url: BASE_URL,
-    logo: `${BASE_URL}/icon.svg`,
+    logo: {
+      "@type": "ImageObject",
+      url: `${BASE_URL}/icon.svg`,
+      width: 192,
+      height: 192,
+    },
+    foundingDate: "2021",
+    areaServed: "UA",
+    knowsAbout: [
+      "Сонячна енергетика",
+      "Гібридні сонячні електростанції",
+      "Накопичувачі енергії LiFePO4",
+      "Системи безперебійного живлення",
+      "Зелений тариф",
+    ],
+    contactPoint: COMPANY.phonesRaw.map((phone, i) => ({
+      "@type": "ContactPoint",
+      telephone: phone,
+      contactType: i === 0 ? "sales" : "customer service",
+      availableLanguage: ["Ukrainian", "Russian"],
+      areaServed: "UA",
+    })),
     sameAs: [COMPANY.instagram, COMPANY.tiktok],
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return renderJsonLd(data);
 }
+
+/* ── WebSite ─────────────────────────────────────────────────────── */
 
 export function WebSiteJsonLd() {
   const data = {
@@ -152,10 +171,128 @@ export function WebSiteJsonLd() {
     publisher: { "@id": `${BASE_URL}/#organization` },
   };
 
+  return renderJsonLd(data);
+}
+
+/* ── WebPage — homepage as a discoverable web resource ───────────── */
+
+export function WebPageJsonLd() {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${BASE_URL}/#webpage`,
+    url: BASE_URL,
+    name: "RUNA SOLAR — Сонячні станції під ключ у Хмельницькому",
+    description:
+      "Монтаж гібридних сонячних електростанцій, накопичувачів та ДБЖ під ключ. Хмельницький та область.",
+    inLanguage: "uk-UA",
+    isPartOf: { "@id": `${BASE_URL}/#website` },
+    about: { "@id": `${BASE_URL}/#business` },
+    primaryImageOfPage: `${BASE_URL}/opengraph-image`,
+  };
+
+  return renderJsonLd(data);
+}
+
+/* ── FAQPage — rich snippets for questions in search ─────────────── */
+
+export function FAQJsonLd() {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+
+  return renderJsonLd(data);
+}
+
+/* ── BreadcrumbList — section navigation hint ────────────────────── */
+
+export function BreadcrumbJsonLd() {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Головна",
+        item: BASE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Послуги",
+        item: `${BASE_URL}/#services`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "Проєкти",
+        item: `${BASE_URL}/#cases`,
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: "Калькулятор",
+        item: `${BASE_URL}/#calculator`,
+      },
+      {
+        "@type": "ListItem",
+        position: 5,
+        name: "Питання",
+        item: `${BASE_URL}/#faq`,
+      },
+      {
+        "@type": "ListItem",
+        position: 6,
+        name: "Контакти",
+        item: `${BASE_URL}/#contact`,
+      },
+    ],
+  };
+
+  return renderJsonLd(data);
+}
+
+/* ── Service — one per offered service ───────────────────────────── */
+
+export function ServiceJsonLd() {
+  const services = SERVICES.map((s) => ({
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${BASE_URL}/#service-${s.id}`,
+    name: s.title,
+    alternateName: s.short,
+    description: s.description,
+    provider: { "@id": `${BASE_URL}/#business` },
+    areaServed: "Хмельницька область",
+    serviceType: s.title,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "USD",
+      url: `${BASE_URL}/#services`,
+      availability: "https://schema.org/InStock",
+      eligibleRegion: { "@type": "Country", name: "Ukraine" },
+    },
+  }));
+
   return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
+    <>
+      {services.map((data) => (
+        <script
+          key={data["@id"]}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+        />
+      ))}
+    </>
   );
 }

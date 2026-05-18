@@ -198,7 +198,7 @@ function CaseCard({
       <div className="relative aspect-[4/3] overflow-hidden bg-bg-warm">
         <Image
           src={c.image}
-          alt={c.title}
+          alt={`Сонячна станція ${c.power} — ${c.title}, ${c.location}`}
           fill
           sizes="(max-width: 640px) 85vw, (max-width: 1024px) 58vw, 33vw"
           className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"

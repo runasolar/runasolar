@@ -103,7 +103,7 @@ function ServiceCard({
         <motion.div style={{ y: imageY }} className="absolute inset-0 scale-110">
           <Image
             src={img}
-            alt={service.title}
+            alt={`${service.title} — ${service.description.split(".")[0]}`}
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 25vw"
