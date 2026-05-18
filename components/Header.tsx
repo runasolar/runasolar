@@ -25,16 +25,16 @@ export function Header() {
           >
             <a
               href="#top"
-              className="flex shrink-0 items-center pl-1"
+              className="flex shrink-0 items-center"
               aria-label="RUNA SOLAR — на головну"
             >
               <Image
                 src="/logo.png"
                 alt="RUNA SOLAR"
-                width={120}
-                height={40}
+                width={160}
+                height={56}
                 priority
-                className="h-9 w-auto lg:h-10"
+                className="h-12 w-auto sm:h-14 lg:h-16"
               />
             </a>
 
@@ -97,9 +97,9 @@ export function Header() {
                 <Image
                   src="/logo.png"
                   alt="RUNA SOLAR"
-                  width={120}
-                  height={40}
-                  className="h-10 w-auto"
+                  width={160}
+                  height={56}
+                  className="h-14 w-auto"
                 />
                 <button
                   onClick={() => setOpen(false)}
