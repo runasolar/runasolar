@@ -103,7 +103,6 @@ export function LocalBusinessJsonLd() {
       },
       reviewBody: t.text,
       datePublished: t.date,
-      itemReviewed: { "@id": `${BASE_URL}/#business` },
     })),
     makesOffer: SERVICES.map((s) => ({
       "@type": "Offer",
