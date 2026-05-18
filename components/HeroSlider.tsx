@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   Calculator as CalculatorIcon,
@@ -65,28 +65,30 @@ export function HeroSlider() {
       id="top"
       className="relative isolate overflow-hidden bg-ink text-bg"
     >
-      {/* Background images — only thing that changes between slides */}
+      {/* Background images — all 4 rendered + preloaded, only active one visible */}
       <div className="absolute inset-0 -z-10">
-        <AnimatePresence mode="sync">
+        {SLIDE_IMAGES.map((src, i) => (
           <motion.div
-            key={active}
-            initial={{ opacity: 0, scale: 1.06 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1 }}
+            key={src}
+            initial={false}
+            animate={{
+              opacity: i === active ? 1 : 0,
+              scale: i === active ? 1 : 1.06,
+            }}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
             className="absolute inset-0"
           >
             <Image
-              src={SLIDE_IMAGES[active]}
+              src={src}
               alt=""
               aria-hidden
               fill
-              priority={active === 0}
+              priority
               sizes="100vw"
               className="object-cover"
             />
           </motion.div>
-        </AnimatePresence>
+        ))}
         <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/65 to-ink/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent" />
       </div>

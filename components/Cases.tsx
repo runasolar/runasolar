@@ -202,7 +202,7 @@ function CaseCard({
           fill
           sizes="(max-width: 640px) 85vw, (max-width: 1024px) 58vw, 33vw"
           className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-          priority={index === 0}
+          priority
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/15 to-transparent" />
 
