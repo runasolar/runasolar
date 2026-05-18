@@ -15,8 +15,8 @@ import {
   Mail,
   Shield,
   Clock,
-  Sparkles,
   Inbox,
+  MapPin,
 } from "lucide-react";
 import { COMPANY } from "@/lib/data";
 import { Reveal } from "./Reveal";
@@ -26,7 +26,7 @@ import { SectionEyebrow } from "./SectionEyebrow";
 const TYPES = [
   { id: "home", label: "Дім", icon: Home },
   { id: "business", label: "Бізнес", icon: Building2 },
-  { id: "backup", label: "Резерв", icon: BatteryCharging },
+  { id: "ups", label: "ДБЖ", icon: BatteryCharging },
 ] as const;
 
 const BILL_PRESETS = [1500, 2500, 4000, 6000, 10000];
@@ -60,7 +60,8 @@ export function Contact() {
   const [phone, setPhone] = useState("");
   const [bill, setBill] = useState("");
   const [agree, setAgree] = useState(true);
-  const [state, setState] = useState<"idle" | "loading" | "ok">("idle");
+  const [state, setState] = useState<"idle" | "loading" | "ok" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const nameValid = name.trim().length >= 2;
   const phoneValid = isValidPhone(phone);
@@ -70,8 +71,28 @@ export function Contact() {
     e.preventDefault();
     if (!canSubmit) return;
     setState("loading");
-    await new Promise((r) => setTimeout(r, 900));
-    setState("ok");
+    setErrorMsg(null);
+    try {
+      const res = await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: "contact",
+          name: name.trim(),
+          phone,
+          type,
+          bill: bill || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(data.error ?? "Network error");
+      }
+      setState("ok");
+    } catch (err) {
+      setState("error");
+      setErrorMsg(err instanceof Error ? err.message : "Не вдалося надіслати");
+    }
   };
 
   return (
@@ -152,6 +173,31 @@ export function Contact() {
                       />
                     </div>
                   </div>
+                </Reveal>
+
+                {/* Address on Google Maps */}
+                <Reveal delay={0.25}>
+                  <a
+                    href={COMPANY.mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-6 flex items-start gap-3 rounded-2xl border border-bg/15 bg-bg/[0.04] p-4 transition-all hover:border-sun-400/50 hover:bg-bg/[0.08] lg:mt-8"
+                  >
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-bg/10 text-sun-400">
+                      <MapPin className="h-4 w-4" strokeWidth={2.2} />
+                    </span>
+                    <div className="flex-1">
+                      <div className="text-[10px] uppercase tracking-wider text-bg/50">
+                        Наш офіс на мапі
+                      </div>
+                      <div className="mt-0.5 text-sm text-bg">
+                        {COMPANY.addressStreet}, {COMPANY.addressCity}
+                      </div>
+                      <div className="mt-1 text-[11px] text-sun-400">
+                        Відкрити в Google Maps →
+                      </div>
+                    </div>
+                  </a>
                 </Reveal>
               </div>
             </div>
@@ -374,6 +420,15 @@ export function Contact() {
                         )}
                       </button>
                     </Magnetic>
+
+                    {state === "error" && (
+                      <div className="rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        Не вдалося надіслати заявку. Зателефонуйте нам — {COMPANY.phones[0]}
+                        {errorMsg && (
+                          <span className="ml-1 text-xs text-red-500">({errorMsg})</span>
+                        )}
+                      </div>
+                    )}
 
                     {/* Trust strip */}
                     <ul className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 border-t border-line pt-5 text-xs text-ink-muted">

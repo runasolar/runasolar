@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { FAQ as FAQ_DATA, FAQ_CATEGORIES, COMPANY, type FaqCategory } from "@/lib/data";
 import { Reveal } from "./Reveal";
-import { SplitText } from "./SplitText";
 import { SectionEyebrow } from "./SectionEyebrow";
 
 const CATEGORY_ICONS: Record<FaqCategory, typeof Wallet> = {
@@ -53,11 +52,9 @@ export function FAQ() {
           <div className="lg:col-span-4">
             <Reveal>
               <SectionEyebrow icon={HelpCircle} label="Часті питання" />
-              <SplitText
-                as="h2"
-                text="Відповідаємо по-чесному."
-                className="h-display mt-4 text-display-2 font-semibold text-balance"
-              />
+              <h2 className="h-display mt-4 text-display-2 font-semibold text-balance text-ink">
+                Відповідаємо по-чесному.
+              </h2>
               <p className="mt-5 text-base text-ink-muted lg:text-lg">
                 Зібрали найпоширеніше. Не знайшли відповідь? Зателефонуйте —
                 пояснимо без води.
@@ -150,7 +147,7 @@ export function FAQ() {
                     >
                       <button
                         onClick={() => setOpen(isOpen ? null : i)}
-                        className="relative flex w-full items-start justify-between gap-6 px-5 py-5 text-left lg:px-7 lg:py-6"
+                        className="relative flex w-full items-center justify-between gap-6 px-5 py-5 text-left lg:px-7 lg:py-6"
                         aria-expanded={isOpen}
                       >
                         {/* Left accent bar when open */}
@@ -163,7 +160,7 @@ export function FAQ() {
                           }`}
                         />
 
-                        <div className="flex items-start gap-3 lg:gap-4">
+                        <div className="flex items-center gap-3 lg:gap-4">
                           <span
                             className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg transition-colors lg:h-8 lg:w-8 ${
                               isOpen

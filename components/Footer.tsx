@@ -17,17 +17,17 @@ import { COMPANY, NAV } from "@/lib/data";
 import { LegalModal, type LegalDocKey } from "./LegalModal";
 
 const SERVICES_LINKS = [
+  { href: "#services", label: "Установки збереження енергії" },
   { href: "#services", label: "СЕС для дому" },
   { href: "#services", label: "СЕС для бізнесу" },
-  { href: "#services", label: "Резервне живлення" },
-  { href: "#calculator", label: "Розрахунок економії" },
+  { href: "#services", label: "Системи безперебійного живлення" },
 ];
 
 const QUICK_LINKS = [
   { href: "#calculator", label: "Калькулятор" },
   { href: "#process", label: "Як працюємо" },
-  { href: "#cases", label: "Кейси" },
-  { href: "#faq", label: "Питання" },
+  { href: "#cases", label: "Проєкти" },
+  { href: "#contact", label: "Контакти" },
 ];
 
 export function Footer() {
@@ -163,15 +163,22 @@ export function Footer() {
                   {COMPANY.email}
                 </a>
               </li>
-              <li className="flex items-start gap-2.5 text-sm text-ink">
-                <MapPin className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-leaf-600" />
-                <span>
-                  проспект Миру, 58/3
-                  <br />
-                  <span className="text-xs text-ink-soft">
-                    Хмельницький, 29027
+              <li>
+                <a
+                  href={COMPANY.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-2.5 text-sm text-ink transition-colors hover:text-leaf-600"
+                >
+                  <MapPin className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-leaf-600" />
+                  <span>
+                    {COMPANY.addressStreet}
+                    <br />
+                    <span className="text-xs text-ink-soft">
+                      {COMPANY.addressCity}, {COMPANY.postalCode}
+                    </span>
                   </span>
-                </span>
+                </a>
               </li>
             </ul>
 

@@ -87,7 +87,7 @@ export function CursorGlow() {
           translateX: "-50%",
           translateY: "-50%",
         }}
-        className="pointer-events-none fixed left-0 top-0 z-[200] rounded-full border-bg mix-blend-difference"
+        className="cursor-glow pointer-events-none fixed left-0 top-0 z-[200] rounded-full border-bg mix-blend-difference"
       />
       {/* Inner dot — fades out on hover (it merges with the ring shrinking onto the target) */}
       <motion.div
@@ -103,7 +103,7 @@ export function CursorGlow() {
           translateX: "-50%",
           translateY: "-50%",
         }}
-        className="pointer-events-none fixed left-0 top-0 z-[200] h-1.5 w-1.5 rounded-full bg-bg mix-blend-difference"
+        className="cursor-glow pointer-events-none fixed left-0 top-0 z-[200] h-1.5 w-1.5 rounded-full bg-bg mix-blend-difference"
       />
     </>
   );

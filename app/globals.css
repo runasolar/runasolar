@@ -116,6 +116,22 @@
   .mask-fade-x {
     mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
   }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@keyframes slide-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.slide-progress-bar {
+  transform-origin: left center;
+  animation: slide-progress linear forwards;
 }
 
 /* Sun ray animation for hero */
@@ -128,10 +144,24 @@
   animation: sun-pulse 6s ease-in-out infinite;
 }
 
-/* Hide native cursor when custom cursor is active */
-html.cursor-hidden,
-html.cursor-hidden * {
-  cursor: none !important;
+/* Hide native cursor when custom cursor is active — desktop only */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  html.cursor-hidden,
+  html.cursor-hidden * {
+    cursor: none !important;
+  }
+}
+
+/* On touch / small screens hide the custom cursor visuals entirely, even if
+   the React gate failed to re-evaluate on resize (e.g. DevTools device mode). */
+@media (max-width: 1023px), (hover: none), (pointer: coarse) {
+  html.cursor-hidden,
+  html.cursor-hidden * {
+    cursor: auto !important;
+  }
+  .cursor-glow {
+    display: none !important;
+  }
 }
 
 /* Reduce motion */

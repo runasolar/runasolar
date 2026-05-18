@@ -1,21 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, Phone, X, Sun } from "lucide-react";
-import { COMPANY, NAV } from "@/lib/data";
-import { cn } from "@/lib/utils";
+import { NAV } from "@/lib/data";
+import { PhonePopup } from "./PhonePopup";
 
 export function Header() {
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const [phoneOpen, setPhoneOpen] = useState(false);
 
   return (
     <>
@@ -27,12 +20,7 @@ export function Header() {
       >
         <div className="container-x">
           <div
-            className={cn(
-              "mx-auto flex items-center justify-between gap-4 rounded-full border px-3 py-2 transition-all duration-500 lg:px-4 lg:py-2.5",
-              scrolled
-                ? "border-line/80 bg-bg/85 shadow-soft backdrop-blur-xl"
-                : "border-line/60 bg-bg/70 shadow-soft backdrop-blur-md"
-            )}
+            className="mx-auto flex items-center justify-between gap-4 rounded-full border border-line bg-bg px-3 py-2 shadow-soft lg:px-4 lg:py-2.5"
           >
             <a href="#top" className="flex shrink-0 items-center gap-2 pl-1">
               <span className="grid h-8 w-8 place-items-center rounded-full bg-leaf-600 text-bg lg:h-9 lg:w-9">
@@ -48,7 +36,7 @@ export function Header() {
                 <a
                   key={item.href}
                   href={item.href}
-                  className="rounded-full px-3.5 py-2 text-sm font-medium text-ink-muted transition-colors hover:bg-bg-warm hover:text-ink"
+                  className="rounded-full px-3 py-2 text-sm font-medium text-ink-muted transition-colors hover:bg-bg-warm hover:text-ink"
                 >
                   {item.label}
                 </a>
@@ -56,15 +44,15 @@ export function Header() {
             </nav>
 
             <div className="flex items-center gap-2">
-              <a
-                href={`tel:${COMPANY.phonesRaw[0]}`}
-                aria-label="Зателефонувати"
+              <button
+                onClick={() => setPhoneOpen(true)}
+                aria-label="Звʼязатися"
                 className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-line text-ink transition-all hover:border-ink lg:h-10 lg:w-10"
               >
                 <Phone className="h-4 w-4" />
-              </a>
+              </button>
               <a
-                href="#contact"
+                href="#calculator"
                 className="hidden h-10 items-center justify-center gap-1.5 rounded-full bg-leaf-600 px-5 text-sm font-medium text-bg transition-all hover:bg-leaf-700 md:inline-flex"
               >
                 Розрахунок
@@ -121,22 +109,18 @@ export function Header() {
                 ))}
               </nav>
               <div className="divider my-6" />
-              <a
-                href={`tel:${COMPANY.phonesRaw[0]}`}
-                className="flex items-center gap-2 py-2 text-base font-medium"
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  setPhoneOpen(true);
+                }}
+                className="flex w-full items-center gap-2 py-2 text-base font-medium"
               >
                 <Phone className="h-4 w-4 text-leaf-600" />
-                {COMPANY.phones[0]}
-              </a>
+                Контакти й месенджери
+              </button>
               <a
-                href={`tel:${COMPANY.phonesRaw[1]}`}
-                className="flex items-center gap-2 py-2 text-base font-medium"
-              >
-                <Phone className="h-4 w-4 text-leaf-600" />
-                {COMPANY.phones[1]}
-              </a>
-              <a
-                href="#contact"
+                href="#calculator"
                 onClick={() => setOpen(false)}
                 className="btn-primary mt-6 w-full"
               >
@@ -146,6 +130,8 @@ export function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <PhonePopup open={phoneOpen} onClose={() => setPhoneOpen(false)} />
     </>
   );
 }

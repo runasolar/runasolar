@@ -1,33 +1,78 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowUpRight,
-  Quote,
+  ChevronLeft,
+  ChevronRight,
   MapPin,
   Zap,
   Wallet,
   Clock,
-  LayoutGrid,
   Briefcase,
 } from "lucide-react";
-import { useRef } from "react";
 import { CASES } from "@/lib/data";
 import { Reveal } from "./Reveal";
 import { SectionHeader } from "./SectionHeader";
 
 export function Cases() {
-  const totalKw = CASES.reduce((s, c) => s + c.powerKw, 0);
-  const totalYearly = CASES.reduce((s, c) => s + c.yearlyKwh, 0);
-  const totalPanels = CASES.reduce((s, c) => s + c.panels, 0);
+  const scrollerRef = useRef<HTMLUListElement>(null);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
+  const [active, setActive] = useState(0);
+  const [positions, setPositions] = useState(1);
 
-  const [featured, ...rest] = CASES;
+  const getCardStep = (el: HTMLElement) => {
+    const card = el.querySelector<HTMLElement>("[data-case-card]");
+    return card ? card.offsetWidth + 20 : el.clientWidth;
+  };
+
+  const updateNav = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    setCanPrev(el.scrollLeft > 8);
+    setCanNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
+
+    const cardStep = getCardStep(el);
+    // How many cards fit fully in the viewport (round handles peek/teaser)
+    const visibleCount = Math.max(1, Math.round(el.clientWidth / cardStep));
+    // Distinct snap-positions = where each non-trailing card can be leftmost
+    const total = Math.max(1, CASES.length - visibleCount + 1);
+    setPositions(total);
+
+    const current = Math.min(
+      total - 1,
+      Math.max(0, Math.round(el.scrollLeft / cardStep))
+    );
+    setActive(current);
+  }, []);
+
+  useEffect(() => {
+    updateNav();
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateNav, { passive: true });
+    window.addEventListener("resize", updateNav);
+    return () => {
+      el.removeEventListener("scroll", updateNav);
+      window.removeEventListener("resize", updateNav);
+    };
+  }, [updateNav]);
+
+  const scrollByCard = (dir: 1 | -1) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * getCardStep(el), behavior: "smooth" });
+  };
+
+  const scrollToPosition = (idx: number) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.scrollTo({ left: idx * getCardStep(el), behavior: "smooth" });
+  };
 
   return (
     <section id="cases" className="relative section-pad overflow-clip">
@@ -44,11 +89,11 @@ export function Cases() {
       <div className="container-x relative">
         <Reveal>
           <SectionHeader
-            index="07 / 09"
+            index="03 / 05"
             eyebrowIcon={Briefcase}
-            eyebrowLabel="Наші кейси"
-            title="Реальні об'єкти у вашому регіоні."
-            description="Три встановлені станції у Хмельницькому — приватний дім, готель і виробничий цех. Реальні цифри генерації та окупності."
+            eyebrowLabel="Реалізовані проєкти"
+            title="Збудовані обʼєкти у Хмельницькій області."
+            description="Приватні будинки, готелі, виробництва й агро — реальні цифри генерації та окупності, які можна перевірити."
             right={
               <a href="#contact" className="btn-secondary group">
                 Хочу так само
@@ -58,181 +103,108 @@ export function Cases() {
           />
         </Reveal>
 
-        {/* Aggregate stats strip */}
+        {/* Carousel */}
         <Reveal delay={0.15}>
-          <div className="mt-8 grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-line bg-line lg:mt-10">
-            <Aggregate label="Сумарна потужність" value={`${totalKw} кВт`} />
-            <Aggregate
-              label="Генерують щорічно"
-              value={`${(totalYearly / 1000).toFixed(0)}+ тис. кВт·год`}
-            />
-            <Aggregate label="Tier-1 панелей" value={`${totalPanels} шт`} />
+          <div className="relative mt-10 lg:mt-14">
+            <ul
+              ref={scrollerRef}
+              className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-5 px-5 pb-4 lg:-mx-8 lg:gap-5 lg:scroll-px-8 lg:px-8"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {CASES.map((c, i) => (
+                <li
+                  key={c.title}
+                  data-case-card
+                  className="w-[92%] shrink-0 snap-start sm:w-[60%] lg:w-[calc((100%-2.5rem)/3)]"
+                >
+                  <CaseCard c={c} index={i} />
+                </li>
+              ))}
+            </ul>
+
+            {/* Controls strip */}
+            <div className="mt-6 flex items-center justify-between gap-4 lg:mt-8">
+              {/* Dots — one per reachable snap position */}
+              {positions > 1 ? (
+                <div className="flex items-center gap-1.5">
+                  {Array.from({ length: positions }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => scrollToPosition(i)}
+                      aria-label={`Позиція ${i + 1}`}
+                      aria-current={i === active}
+                      className={`h-1 rounded-full transition-all ${
+                        i === active
+                          ? "w-8 bg-leaf-600"
+                          : "w-4 bg-line hover:bg-ink-soft"
+                      }`}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <span aria-hidden />
+              )}
+
+              {/* Counter + prev / next */}
+              <div className="flex items-center gap-3">
+                <span className="h-display text-sm tabular-nums text-ink-soft">
+                  <span className="text-ink">
+                    {String(active + 1).padStart(2, "0")}
+                  </span>
+                  <span> / {String(positions).padStart(2, "0")}</span>
+                </span>
+                <button
+                  onClick={() => scrollByCard(-1)}
+                  disabled={!canPrev}
+                  aria-label="Попередній проєкт"
+                  className="grid h-11 w-11 place-items-center rounded-full border border-line bg-bg text-ink transition-all hover:border-ink hover:bg-bg-warm disabled:cursor-not-allowed disabled:opacity-30 lg:h-12 lg:w-12"
+                >
+                  <ChevronLeft className="h-5 w-5" strokeWidth={2} />
+                </button>
+                <button
+                  onClick={() => scrollByCard(1)}
+                  disabled={!canNext}
+                  aria-label="Наступний проєкт"
+                  className="grid h-11 w-11 place-items-center rounded-full border border-line bg-bg text-ink transition-all hover:border-ink hover:bg-bg-warm disabled:cursor-not-allowed disabled:opacity-30 lg:h-12 lg:w-12"
+                >
+                  <ChevronRight className="h-5 w-5" strokeWidth={2} />
+                </button>
+              </div>
+            </div>
           </div>
         </Reveal>
-
-        {/* Bento grid: 1 featured + 2 compact */}
-        <ul className="mt-8 grid gap-5 lg:mt-10 lg:auto-rows-fr lg:grid-cols-12 lg:gap-6">
-          <Reveal as="li" delay={0.1} className="lg:col-span-7 lg:row-span-2">
-            <FeaturedCase c={featured} />
-          </Reveal>
-          {rest.map((c, i) => (
-            <Reveal
-              key={c.title}
-              as="li"
-              delay={0.2 + i * 0.1}
-              className="lg:col-span-5"
-            >
-              <CompactCase c={c} />
-            </Reveal>
-          ))}
-        </ul>
       </div>
     </section>
   );
 }
 
-/* ── Featured (large) case ───────────────────────────────────────── */
-
-function FeaturedCase({ c }: { c: (typeof CASES)[number] }) {
-  const tilt = useTilt(2);
+/* ── Project card ────────────────────────────────────────────────── */
+function CaseCard({
+  c,
+  index,
+}: {
+  c: (typeof CASES)[number];
+  index: number;
+}) {
   const isBusiness = c.type === "Бізнес";
 
   return (
     <motion.article
-      ref={tilt.ref}
-      onMouseMove={tilt.onMove}
-      onMouseLeave={tilt.onLeave}
-      style={{
-        rotateX: tilt.rx,
-        rotateY: tilt.ry,
-        transformPerspective: 1400,
-      }}
-      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-bg shadow-soft will-change-transform"
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-bg shadow-soft transition-shadow duration-500 hover:shadow-lift"
     >
-      {/* IMAGE */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-bg-warm lg:aspect-[16/9]">
+      {/* Image */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-bg-warm">
         <Image
           src={c.image}
           alt={c.title}
           fill
-          sizes="(max-width: 1024px) 100vw, 60vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-          priority
+          sizes="(max-width: 640px) 85vw, (max-width: 1024px) 58vw, 33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+          priority={index === 0}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/15 to-transparent" />
-
-        {/* Featured ribbon */}
-        <div className="absolute left-3 top-3 flex items-center gap-1.5 sm:left-5 sm:top-5 sm:gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-sun-400 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-ink shadow-soft sm:gap-1.5 sm:px-3 sm:py-1 sm:text-[10px] sm:tracking-[0.16em]">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ink/60" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ink" />
-            </span>
-            Featured
-          </span>
-          <span
-            className={`rounded-full px-2 py-0.5 text-[10px] font-medium backdrop-blur-md sm:px-3 sm:py-1 sm:text-xs ${
-              isBusiness ? "bg-ink/80 text-bg" : "bg-bg/95 text-ink"
-            }`}
-          >
-            {c.type}
-          </span>
-        </div>
-
-        {/* Power chip */}
-        <div className="absolute right-3 top-3 sm:right-5 sm:top-5">
-          <span className="h-display inline-flex items-center gap-1 rounded-full bg-bg/95 px-2.5 py-1 text-sm font-bold tabular-nums text-ink shadow-lift sm:gap-1.5 sm:px-4 sm:py-2 sm:text-base">
-            <Zap className="h-3.5 w-3.5 text-sun-500 sm:h-4 sm:w-4" strokeWidth={2.5} />
-            {c.power}
-          </span>
-        </div>
-
-        {/* Title + location overlay */}
-        <div className="absolute inset-x-4 bottom-4 sm:inset-x-6 sm:bottom-6 lg:inset-x-8 lg:bottom-8">
-          <div className="flex items-center gap-1 text-[10px] uppercase tracking-[0.14em] text-bg/85 sm:gap-1.5 sm:text-xs sm:tracking-[0.16em]">
-            <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-            {c.location}
-          </div>
-          <h3 className="h-display mt-1.5 text-xl font-semibold leading-tight text-bg sm:mt-2 sm:text-2xl lg:text-4xl">
-            {c.title.split(",")[0]}
-          </h3>
-        </div>
-      </div>
-
-      {/* CONTENT */}
-      <div className="flex flex-1 flex-col gap-4 p-4 sm:gap-6 sm:p-6 lg:gap-7 lg:p-8">
-        {/* Metric row — horizontal */}
-        <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <BigMetric
-            icon={Zap}
-            label="Генерація / рік"
-            value={c.yearly.replace(" / рік", "")}
-          />
-          <BigMetric
-            icon={Wallet}
-            label="Економія / рік"
-            value={c.savings.replace(" / рік", "")}
-          />
-          <BigMetric icon={Clock} label="Окупність" value={c.payback} />
-          <BigMetric
-            icon={LayoutGrid}
-            label="Панелей"
-            value={`${c.panels} шт`}
-          />
-        </ul>
-
-        {/* Quote */}
-        <div className="relative flex items-start gap-3 rounded-2xl border border-line bg-bg-warm/60 p-4 sm:p-5 lg:p-6">
-          <Quote
-            className="absolute -top-2 left-4 h-4 w-4 -translate-y-1/2 bg-bg-warm px-0.5 text-leaf-600 sm:left-5 sm:h-5 sm:w-5"
-            strokeWidth={2}
-          />
-          <div className="flex-1">
-            <p className="text-sm text-ink text-pretty sm:text-base lg:text-lg">{c.quote}</p>
-            <div className="mt-2.5 flex items-center gap-2.5 sm:mt-3">
-              <span className="h-display grid h-8 w-8 shrink-0 place-items-center rounded-full bg-leaf-600 text-xs font-semibold text-bg sm:h-9 sm:w-9 sm:text-sm">
-                {initials(c.client)}
-              </span>
-              <div className="min-w-0">
-                <div className="truncate text-sm font-medium text-ink">{c.client}</div>
-                <div className="text-xs text-ink-soft">Власник станції</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.article>
-  );
-}
-
-/* ── Compact (small) case ────────────────────────────────────────── */
-
-function CompactCase({ c }: { c: (typeof CASES)[number] }) {
-  const tilt = useTilt(3);
-  const isBusiness = c.type === "Бізнес";
-
-  return (
-    <motion.article
-      ref={tilt.ref}
-      onMouseMove={tilt.onMove}
-      onMouseLeave={tilt.onLeave}
-      style={{
-        rotateX: tilt.rx,
-        rotateY: tilt.ry,
-        transformPerspective: 1200,
-      }}
-      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-bg shadow-soft will-change-transform"
-    >
-      {/* IMAGE */}
-      <div className="relative aspect-[16/9] overflow-hidden bg-bg-warm">
-        <Image
-          src={c.image}
-          alt={c.title}
-          fill
-          sizes="(max-width: 1024px) 100vw, 40vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-[1.06]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/15 to-transparent" />
 
         {/* Type chip */}
         <div className="absolute left-4 top-4">
@@ -247,81 +219,54 @@ function CompactCase({ c }: { c: (typeof CASES)[number] }) {
 
         {/* Power chip */}
         <div className="absolute right-4 top-4">
-          <span className="h-display inline-flex items-center gap-1 rounded-full bg-sun-500 px-3 py-1 text-sm font-bold tabular-nums text-ink">
-            <Zap className="h-3 w-3" strokeWidth={2.5} />
+          <span className="h-display inline-flex items-center gap-1 rounded-full bg-sun-500 px-3 py-1 text-sm font-bold tabular-nums text-ink shadow-soft">
+            <Zap className="h-3.5 w-3.5" strokeWidth={2.5} />
             {c.power}
           </span>
         </div>
 
         {/* Title overlay */}
-        <div className="absolute inset-x-4 bottom-3.5">
-          <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-bg/75">
-            <MapPin className="h-2.5 w-2.5" />
+        <div className="absolute inset-x-5 bottom-5">
+          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.16em] text-bg/80">
+            <MapPin className="h-3 w-3" />
             {c.location.split(",")[0]}
           </div>
-          <h3 className="h-display mt-1 text-base font-semibold leading-tight text-bg lg:text-lg">
+          <h3 className="h-display mt-1.5 text-lg font-semibold leading-tight text-bg lg:text-xl">
             {c.title.split(",")[0]}
           </h3>
         </div>
       </div>
 
-      {/* CONTENT — compact */}
-      <div className="flex flex-1 flex-col gap-4 p-5">
-        <ul className="grid grid-cols-2 gap-2">
-          <SmallMetric
-            icon={Wallet}
-            label="Економія"
-            value={c.savings.replace(" / рік", "/рік")}
-          />
-          <SmallMetric icon={Clock} label="Окупність" value={c.payback} />
+      {/* Footer */}
+      <div className="flex flex-1 flex-col gap-4 p-5 lg:p-6">
+        {/* Two-metric strip */}
+        <ul className="grid grid-cols-2 gap-3">
+          <Metric icon={Wallet} label="Економія" value={c.savings.replace(" / рік", "/рік")} />
+          <Metric icon={Clock} label="Окупність" value={c.payback} />
         </ul>
 
-        {/* Compact quote */}
-        <div className="flex items-start gap-2 border-t border-line pt-4">
-          <Quote className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-leaf-600" strokeWidth={2} />
-          <p className="line-clamp-2 text-xs text-ink-muted text-pretty">
-            "{c.quote}" <span className="text-ink-soft">— {c.client}</span>
-          </p>
-        </div>
+        {/* Quote */}
+        <p className="line-clamp-2 text-sm text-ink-muted text-pretty">
+          “{c.quote}” <span className="text-ink-soft">— {c.client}</span>
+        </p>
+
+        {/* Bottom: Детальніше */}
+        <a
+          href="#contact"
+          className="mt-auto inline-flex items-center justify-between gap-2 rounded-full border border-line bg-bg-warm/40 px-4 py-3 text-sm font-medium text-ink transition-all hover:border-leaf-600 hover:bg-leaf-50 hover:text-leaf-700"
+        >
+          Детальніше про проєкт
+          <ArrowUpRight
+            className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            strokeWidth={2}
+          />
+        </a>
       </div>
     </motion.article>
   );
 }
 
-/* ── Tilt hook ───────────────────────────────────────────────────── */
-
-function useTilt(intensity = 4) {
-  const ref = useRef<HTMLElement>(null);
-  const mx = useMotionValue(0.5);
-  const my = useMotionValue(0.5);
-  const rx = useTransform(
-    useSpring(my, { stiffness: 200, damping: 20 }),
-    [0, 1],
-    [intensity, -intensity]
-  );
-  const ry = useTransform(
-    useSpring(mx, { stiffness: 200, damping: 20 }),
-    [0, 1],
-    [-intensity, intensity]
-  );
-
-  const onMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
-    const r = ref.current.getBoundingClientRect();
-    mx.set((e.clientX - r.left) / r.width);
-    my.set((e.clientY - r.top) / r.height);
-  };
-  const onLeave = () => {
-    mx.set(0.5);
-    my.set(0.5);
-  };
-
-  return { ref, rx, ry, onMove, onLeave };
-}
-
-/* ── Metric components ──────────────────────────────────────────── */
-
-function BigMetric({
+function Metric({
   icon: Icon,
   label,
   value,
@@ -331,61 +276,16 @@ function BigMetric({
   value: string;
 }) {
   return (
-    <li className="rounded-xl border border-line bg-bg-warm/40 p-3 sm:p-3.5 lg:p-4">
+    <li className="rounded-2xl border border-line bg-bg-warm/40 p-3">
       <div className="flex items-center gap-1.5">
-        <Icon className="h-3 w-3 shrink-0 text-leaf-600 sm:h-3.5 sm:w-3.5" strokeWidth={2} />
-        <div className="truncate text-[9px] uppercase tracking-wider text-ink-soft sm:text-[10px]">
+        <Icon className="h-3 w-3 shrink-0 text-leaf-600" strokeWidth={2} />
+        <div className="truncate text-[9px] uppercase tracking-wider text-ink-soft">
           {label}
         </div>
       </div>
-      <div className="h-display mt-1.5 truncate text-sm font-semibold tabular-nums leading-tight text-ink sm:text-base lg:text-lg">
+      <div className="h-display mt-1 truncate text-sm font-semibold tabular-nums leading-tight text-ink">
         {value}
       </div>
     </li>
   );
-}
-
-function SmallMetric({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Zap;
-  label: string;
-  value: string;
-}) {
-  return (
-    <li className="flex items-start gap-2">
-      <Icon className="mt-0.5 h-3 w-3 flex-shrink-0 text-leaf-600" strokeWidth={2} />
-      <div className="min-w-0">
-        <div className="text-[9px] uppercase tracking-wider text-ink-soft">
-          {label}
-        </div>
-        <div className="h-display mt-0.5 truncate text-sm font-semibold tabular-nums leading-tight text-ink">
-          {value}
-        </div>
-      </div>
-    </li>
-  );
-}
-
-function Aggregate({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-bg p-4 lg:p-6">
-      <div className="text-[10px] uppercase tracking-[0.18em] text-ink-soft lg:text-xs">
-        {label}
-      </div>
-      <div className="h-display mt-1.5 text-xl font-semibold tabular-nums leading-tight lg:text-3xl">
-        {value}
-      </div>
-    </div>
-  );
-}
-
-/* ── Utils ───────────────────────────────────────────────────────── */
-
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0][0]?.toUpperCase() ?? "";
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
