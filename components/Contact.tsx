@@ -121,7 +121,7 @@ export function Contact() {
               <div className="relative flex h-full flex-col">
                 <Reveal>
                   <SectionEyebrow icon={Inbox} label="Заявка" variant="onDark" />
-                  <h2 className="h-display mt-4 text-display-2 font-semibold text-balance text-bg">
+                  <h2 className="h-display mt-4 text-display-3 font-semibold text-balance text-bg">
                     Передзвонимо за{" "}
                     <span className="text-sun-400">30 хвилин</span>.
                   </h2>

@@ -52,7 +52,7 @@ export function FAQ() {
           <div className="lg:col-span-4">
             <Reveal>
               <SectionEyebrow icon={HelpCircle} label="Часті питання" />
-              <h2 className="h-display mt-4 text-display-2 font-semibold text-balance text-ink">
+              <h2 className="h-display mt-4 text-display-3 font-semibold text-balance text-ink">
                 Відповідаємо по-чесному.
               </h2>
               <p className="mt-5 text-base text-ink-muted lg:text-lg">
