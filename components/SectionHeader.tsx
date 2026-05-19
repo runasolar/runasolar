@@ -64,7 +64,7 @@ export function SectionHeader({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "0px" }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className={`h-display text-[clamp(1.625rem,5vw,4.5rem)] font-semibold leading-[1.05] tracking-tight text-balance hyphens-auto ${
+            className={`h-display text-[clamp(1.625rem,3.8vw,3.25rem)] font-semibold leading-[1.05] tracking-tight text-balance hyphens-auto ${
               isDark ? "text-bg" : "text-ink"
             }`}
             lang="uk"

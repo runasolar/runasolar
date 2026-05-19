@@ -2,26 +2,11 @@
 
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import {
-  Home,
-  Building2,
-  Battery,
-  BatteryCharging,
-  ArrowUpRight,
-  Check,
-  LayoutGrid,
-} from "lucide-react";
+import { Check, LayoutGrid } from "lucide-react";
 import { useRef } from "react";
 import { SERVICES } from "@/lib/data";
 import { Reveal } from "./Reveal";
 import { SectionHeader } from "./SectionHeader";
-
-const ICONS: Record<string, typeof Home> = {
-  storage: Battery,
-  home: Home,
-  business: Building2,
-  ups: BatteryCharging,
-};
 
 export function Services() {
   return (
@@ -29,22 +14,28 @@ export function Services() {
       <div className="container-x">
         <Reveal>
           <SectionHeader
-            index="02 / 05"
+            index="02 / 04"
             eyebrowIcon={LayoutGrid}
             eyebrowLabel="Що ми робимо"
             title="Чотири рішення для енергонезалежності."
-            description="Від накопичувача для котла й насоса до промислових 500 кВт. Підбираємо систему під ваше споживання, дах і бюджет."
+            description="Сонячні станції, накопичувачі енергії та системи автономного живлення під ключ — для дому й бізнесу будь-якого масштабу."
           />
         </Reveal>
 
-        {/* 4-card grid — competitor-style horizontal layout */}
-        <ul className="mt-12 grid gap-4 lg:mt-16 lg:grid-cols-4 lg:gap-5">
+        {/* Asymmetric bento: 7-5 / 5-7 spans on desktop, single column on mobile */}
+        <ul className="mt-12 grid gap-4 lg:mt-16 lg:grid-cols-12 lg:gap-5">
           {SERVICES.map((s, i) => {
-            const Icon = ICONS[s.id] ?? Home;
             const variant = i % 2 === 0 ? "light" : "dark";
+            const spanClass =
+              i === 0 || i === 3 ? "lg:col-span-7" : "lg:col-span-5";
             return (
-              <Reveal as="li" key={s.id} delay={0.05 + i * 0.08}>
-                <ServiceCard service={s} icon={Icon} variant={variant} />
+              <Reveal
+                as="li"
+                key={s.id}
+                delay={0.05 + i * 0.08}
+                className={spanClass}
+              >
+                <ServiceCard service={s} variant={variant} />
               </Reveal>
             );
           })}
@@ -57,25 +48,21 @@ export function Services() {
 // Real Unsplash photos mapped per service category.
 // Domain whitelisted in next.config.mjs.
 const SERVICE_IMAGES: Record<string, string> = {
-  // УЗЄ — close-up of monocrystalline panels (storage / energy capture vibe)
-  storage:
-    "https://images.unsplash.com/photo-1745187946672-2c1d8cf26a2b?w=1200&q=80&auto=format&fit=crop",
-  // СЕС дім — close-up of solar panel on residential roof
-  home: "https://images.unsplash.com/photo-1694248581706-a645f65a2f27?w=1200&q=80&auto=format&fit=crop",
-  // СЕС бізнес — industrial / commercial roof with solar panels
-  business:
-    "https://images.unsplash.com/photo-1745321633881-d2d2218911bd?w=1200&q=80&auto=format&fit=crop",
-  // ДБЖ — electrician working on electrical panel
-  ups: "https://images.unsplash.com/photo-1758101755915-462eddc23f57?w=1200&q=80&auto=format&fit=crop",
+  // УЗЕ — our own install: LuxPower inverters + Dyness battery cabinets
+  storage: "/services/storage.webp",
+  // СЕС дім — residential rooftop with solar panels at dusk
+  home: "/services/home.webp",
+  // СЕС бізнес — aerial of a commercial rooftop array (our install)
+  business: "/services/business.webp",
+  // САЖ — Huawei autonomous power system: inverter + battery cabinet + breaker panel
+  ups: "/services/ups.webp",
 };
 
 function ServiceCard({
   service,
-  icon: Icon,
   variant,
 }: {
   service: (typeof SERVICES)[number];
-  icon: typeof Home;
   variant: "light" | "dark";
 }) {
   const ref = useRef<HTMLElement>(null);
@@ -90,9 +77,11 @@ function ServiceCard({
   const isDark = variant === "dark";
 
   return (
-    <article
-      ref={ref}
-      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl shadow-soft transition-shadow duration-500 hover:shadow-lift ${
+    <a
+      ref={ref as React.RefObject<HTMLAnchorElement>}
+      href="#contact"
+      aria-label={`${service.title} — залишити заявку`}
+      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift ${
         isDark
           ? "bg-ink text-bg"
           : "border border-line bg-bg"
@@ -117,31 +106,6 @@ function ServiceCard({
           }`}
         />
 
-        {/* Icon badge */}
-        <div className="absolute left-4 top-4">
-          <span
-            className={`grid h-11 w-11 place-items-center rounded-2xl backdrop-blur-md ${
-              isDark
-                ? "bg-bg/10 text-sun-400 ring-1 ring-bg/20"
-                : "bg-bg/85 text-leaf-600 ring-1 ring-line"
-            }`}
-          >
-            <Icon className="h-5 w-5" strokeWidth={2} />
-          </span>
-        </div>
-
-        {/* Range chip */}
-        <div className="absolute right-4 top-4">
-          <span
-            className={`rounded-full px-2.5 py-1 text-[11px] font-medium backdrop-blur-md ${
-              isDark
-                ? "border border-bg/20 bg-bg/10 text-bg/85"
-                : "border border-line bg-bg/90 text-ink-muted"
-            }`}
-          >
-            {service.range}
-          </span>
-        </div>
       </div>
 
       {/* Content */}
@@ -185,37 +149,7 @@ function ServiceCard({
           ))}
         </ul>
 
-        {/* Bottom: price + CTA arrow */}
-        <div
-          className={`mt-auto flex items-end justify-between pt-4 ${
-            isDark ? "border-t border-bg/15" : "border-t border-line"
-          }`}
-        >
-          <div>
-            <div
-              className={`text-[10px] uppercase tracking-wider ${
-                isDark ? "text-bg/45" : "text-ink-soft"
-              }`}
-            >
-              Ціна
-            </div>
-            <div className="h-display mt-0.5 text-sm font-semibold tabular-nums">
-              {service.priceFrom}
-            </div>
-          </div>
-          <a
-            href="#contact"
-            aria-label={`Замовити ${service.title}`}
-            className={`grid h-10 w-10 shrink-0 place-items-center rounded-full transition-all ${
-              isDark
-                ? "border border-bg/25 group-hover:border-sun-400 group-hover:bg-sun-400 group-hover:text-ink"
-                : "border border-line group-hover:border-leaf-600 group-hover:bg-leaf-600 group-hover:text-bg"
-            }`}
-          >
-            <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
-          </a>
-        </div>
       </div>
-    </article>
+    </a>
   );
 }

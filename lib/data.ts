@@ -13,11 +13,9 @@ export const COMPANY = {
   address: "проспект Миру, 58/3, Хмельницький",
   addressStreet: "проспект Миру, 58/3",
   addressCity: "Хмельницький",
-  postalCode: "29000",
-  // Google Maps search link — opens in app/browser pinned to address
-  mapsUrl:
-    "https://www.google.com/maps/search/?api=1&query=" +
-    encodeURIComponent("проспект Миру 58/3, Хмельницький"),
+  postalCode: "29027",
+  // Direct Google Maps share link to our office pin
+  mapsUrl: "https://maps.app.goo.gl/iPAC3vpiqqqgTLvA7",
   workingHours: "Пн–Сб, 9:00–19:00",
 };
 
@@ -25,8 +23,31 @@ export const NAV = [
   { href: "#services", label: "Послуги" },
   { href: "#cases", label: "Проєкти" },
   { href: "#calculator", label: "Калькулятор" },
-  { href: "#faq", label: "Питання" },
   { href: "#contact", label: "Контакти" },
+];
+
+export const BRANDS: {
+  name: string;
+  category: "inverter" | "panel";
+  /** Path under /public — when missing, the marquee falls back to a wordmark. */
+  logo?: string;
+}[] = [
+  // Inverters & batteries
+  { name: "Huawei", category: "inverter", logo: "/brands/huawei.svg" },
+  { name: "Solis", category: "inverter", logo: "/brands/solis.svg" },
+  { name: "Solax", category: "inverter", logo: "/brands/solax.webp" },
+  { name: "FOX ESS", category: "inverter", logo: "/brands/foxess.webp" },
+  { name: "Deye", category: "inverter", logo: "/brands/deye.webp" },
+  { name: "Victron", category: "inverter", logo: "/brands/victron.svg" },
+  { name: "Fronius", category: "inverter", logo: "/brands/fronius.svg" },
+  // Solar panels
+  { name: "JinkoSolar", category: "panel", logo: "/brands/jinko.svg" },
+  { name: "JA Solar", category: "panel", logo: "/brands/jasolar.svg" },
+  { name: "Tongwei", category: "panel", logo: "/brands/tongwei.webp" },
+  { name: "Trina Solar", category: "panel", logo: "/brands/trina.svg" },
+  { name: "Risen Energy", category: "panel", logo: "/brands/risen.webp" },
+  { name: "Dah Solar", category: "panel", logo: "/brands/dahsolar.webp" },
+  { name: "Leapton", category: "panel", logo: "/brands/leapton.webp" },
 ];
 
 export const STATS = [
@@ -39,16 +60,16 @@ export const STATS = [
 export const SERVICES = [
   {
     id: "storage",
-    title: "Установки збереження енергії",
+    title: "Установки зберігання енергії",
     short: "УЗЕ",
     range: "5 кВт·год — МВт·год",
     priceFrom: "від 2 400 $",
     description:
-      "LiFePO4-накопичувачі для дому, бізнесу та промисловості. Від компактних домашніх 5–30 кВт·год до промислових Solax AELIO-B100 на 100 кВт·год з модульним масштабуванням до мегават-годин. Підходить як до сонячної станції, так і окремо для резерву.",
+      "Модульні LiFePO4-накопичувачі від 5 кВт·год для дому до сотень кВт·год для бізнесу. Зберігають денну сонячну генерацію та тримають резерв у блекаут.",
     bullets: [
-      "Резерв EPS за <10 мс — техніка не помічає блекауту",
-      "6 000+ циклів, ~15 років роботи, діапазон −30°C / +55°C",
-      "Модульна — масштабується від кВт·год до МВт·год",
+      "Резерв у блекаут до 15 годин",
+      "Зберігає денну генерацію на вечір",
+      "Економія на нічному тарифі",
     ],
   },
   {
@@ -60,9 +81,8 @@ export const SERVICES = [
     description:
       "Гібридна або мережева станція під ключ для приватного будинку. Проєкт, обладнання Tier-1, монтаж за 3–7 днів, підключення до мережі.",
     bullets: [
-      "Економія до 90% на електриці",
-      "Резервне живлення під час відключень",
-      "Збільшує вартість нерухомості на 5–8%",
+      "Повний комфорт та автономність",
+      "Ваш комфорт без відключень",
     ],
   },
   {
@@ -72,25 +92,25 @@ export const SERVICES = [
     range: "30–500 кВт",
     priceFrom: "за прорахунком",
     description:
-      "Промислові гібриди для СТО, готелів, виробництв і агро. Працюємо коли в інших темно — нуль простоїв через блекаути.",
+      "Промислові гібриди з резервом для виробництв, готелів, СТО та агро. Окупність 2–6 років, нижчі рахунки за електрику та робота обладнання навіть у блекаут.",
     bullets: [
-      "Окупність 4–6 років",
-      "Безперервне виробництво в блекаут",
-      "Прозорий ROI з графіком генерації",
+      "Окупність 2–6 років",
+      "Економія на електроенергії",
+      "Безперервне виробництво",
     ],
   },
   {
     id: "ups",
-    title: "Системи безперебійного живлення",
-    short: "ДБЖ",
+    title: "Системи автономного живлення",
+    short: "САЖ",
     range: "1–10 кВт",
     priceFrom: "від 800 $",
     description:
-      "Інвертор + акумулятор для котла, насоса, інтернету та світла. Перемикання за 10 мс — техніка навіть не моргає під час блекауту.",
+      "Для автономної роботи вашого дому та бізнесу. Миттєво підхоплює навантаження у блекаут — без шуму, без чекання, без перебоїв.",
     bullets: [
       "Перемикання за частки секунди",
       "Тиха робота, без шуму генератора",
-      "До 10 годин автономії",
+      "Автономія під час перебоїв зі світлом",
     ],
   },
 ];
@@ -123,102 +143,38 @@ export const PROCESS_STEPS = [
   },
 ];
 
-export const CASES = [
+export type CaseItem = {
+  title: string;
+  location: string;
+  type: "Дім" | "Бізнес";
+  power: string;
+  image: string;
+  /** When present, the card autoplays this clip instead of rendering the image. */
+  video?: string;
+};
+
+export const CASES: CaseItem[] = [
   {
     title: "Приватний дім, Хмельницький",
     location: "Хмельницький",
     type: "Дім",
     power: "12 кВт",
-    powerKw: 12,
-    yearly: "13 800 кВт·год / рік",
-    yearlyKwh: 13800,
-    panels: 28,
-    savings: "60 000 ₴ / рік",
-    payback: "4.5 років",
-    quote: "За пів року ні разу не сиділи в темряві.",
-    client: "Андрій М.",
-    image:
-      "https://images.unsplash.com/photo-1655300256335-beef51a914fe?w=1600&q=80&auto=format&fit=crop",
+    image: "/projects/private-home.webp",
   },
   {
-    title: "Готель, Хмельницький",
-    location: "Хмельницький, район Виставка",
-    type: "Бізнес",
-    power: "25 кВт",
-    powerKw: 25,
-    yearly: "29 000 кВт·год / рік",
-    yearlyKwh: 29000,
-    panels: 58,
-    savings: "126 000 ₴ / рік",
-    payback: "4.8 років",
-    quote: "Гості не помічають, коли мережу вимикають.",
-    client: "Олена К.",
-    image:
-      "https://images.unsplash.com/photo-1655300283247-6b1924b1d152?w=1600&q=80&auto=format&fit=crop",
-  },
-  {
-    title: "Виробничий цех, Хмельницький",
-    location: "Хмельницький, район Дубове",
-    type: "Бізнес",
-    power: "40 кВт",
-    powerKw: 40,
-    yearly: "47 000 кВт·год / рік",
-    yearlyKwh: 47000,
-    panels: 92,
-    savings: "204 000 ₴ / рік",
-    payback: "4.0 років",
-    quote: "Холодильні камери стабільні навіть у блекаут.",
-    client: "Петро С.",
-    image:
-      "https://images.unsplash.com/photo-1745321633881-d2d2218911bd?w=1600&q=80&auto=format&fit=crop",
-  },
-  {
-    title: "Котедж, Меджибіж",
-    location: "Меджибіж, Хмельницька обл.",
+    title: "Приватний дім, Хмельницький",
+    location: "Хмельницький",
     type: "Дім",
-    power: "8 кВт",
-    powerKw: 8,
-    yearly: "9 200 кВт·год / рік",
-    yearlyKwh: 9200,
-    panels: 18,
-    savings: "42 000 ₴ / рік",
-    payback: "5.1 років",
-    quote: "Котел і свердловина працюють у будь-який блекаут.",
-    client: "Юлія В.",
-    image:
-      "https://images.unsplash.com/photo-1763114613273-ec505136d03a?w=1600&q=80&auto=format&fit=crop",
+    power: "6 кВт",
+    image: "/projects/private-home-2.webp",
   },
   {
-    title: "СТО, Старокостянтинів",
-    location: "Старокостянтинів",
+    title: "Офісний центр, Хмельницький",
+    location: "Хмельницький",
     type: "Бізнес",
     power: "20 кВт",
-    powerKw: 20,
-    yearly: "23 500 кВт·год / рік",
-    yearlyKwh: 23500,
-    panels: 46,
-    savings: "102 000 ₴ / рік",
-    payback: "4.3 років",
-    quote: "Підйомники й компресор не зупиняються вже рік.",
-    client: "Максим Д.",
-    image:
-      "https://images.unsplash.com/photo-1726866492047-7f9516558c6e?w=1600&q=80&auto=format&fit=crop",
-  },
-  {
-    title: "Агрокомплекс, Дунаївці",
-    location: "Дунаївці, Хмельницька обл.",
-    type: "Бізнес",
-    power: "60 кВт",
-    powerKw: 60,
-    yearly: "71 000 кВт·год / рік",
-    yearlyKwh: 71000,
-    panels: 138,
-    savings: "308 000 ₴ / рік",
-    payback: "3.8 років",
-    quote: "Зерносушарка і насосні станції на сонці навіть у пік сезону.",
-    client: "Ярослав К.",
-    image:
-      "https://images.unsplash.com/photo-1749192901190-ea45a711b0e3?w=1600&q=80&auto=format&fit=crop",
+    image: "",
+    video: "/projects/office-1.mp4",
   },
 ];
 

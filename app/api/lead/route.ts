@@ -9,38 +9,29 @@ type LeadPayload = {
   // Contact form extras
   type?: string;
   bill?: string;
+  consumption?: string;
   // Quiz extras
   location?: string;
   goal?: string;
-  reason?: string;
   placement?: string;
 };
 
 const LABELS: Record<string, Record<string, string>> = {
-  type: { home: "Дім", business: "Бізнес", ups: "ДБЖ" },
+  type: { home: "Дім", business: "Бізнес", ups: "САЖ" },
   location: {
     home: "Приватний будинок",
-    cottage: "Дача / котедж",
-    business: "Бізнес / офіс",
-    industrial: "Виробництво / агро",
+    business: "Бізнес",
   },
   goal: {
     save: "Економія на електриці",
     backup: "Резерв на блекаут",
     both: "Економія + резерв",
     green: "Зелений тариф / прибуток",
-  },
-  reason: {
-    blackouts: "Блекаути та відключення",
-    bills: "Високі рахунки",
-    independence: "Енергонезалежність",
-    eco: "Екологія / ESG",
+    active: "Активний споживач",
   },
   placement: {
-    roof: "Дах будинку",
-    ground: "Окрема ділянка",
-    carport: "Навіс / гараж",
-    "industrial-roof": "Дах цеху / агро",
+    roof: "На даху",
+    ground: "На землі",
   },
 };
 
@@ -65,10 +56,13 @@ function buildTelegramMessage(p: LeadPayload): string {
       lines.push(
         `💡 *Рахунок:* ${Number(p.bill).toLocaleString("uk-UA")} ₴/міс`
       );
+    if (p.consumption)
+      lines.push(
+        `⚡ *Споживання:* ${Number(p.consumption).toLocaleString("uk-UA")} кВт`
+      );
   } else {
     if (p.location) lines.push(`📍 *Об'єкт:* ${label("location", p.location)}`);
     if (p.goal) lines.push(`🎯 *Мета:* ${label("goal", p.goal)}`);
-    if (p.reason) lines.push(`💭 *Причина:* ${label("reason", p.reason)}`);
     if (p.placement)
       lines.push(`🏗 *Розміщення:* ${label("placement", p.placement)}`);
   }

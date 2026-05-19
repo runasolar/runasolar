@@ -1,4 +1,4 @@
-import { COMPANY, SERVICES, FAQ, TESTIMONIALS } from "@/lib/data";
+import { COMPANY, SERVICES, TESTIMONIALS } from "@/lib/data";
 import { SITE_URL as BASE_URL } from "@/lib/site";
 
 /* ── Helpers ──────────────────────────────────────────────────────── */
@@ -50,7 +50,7 @@ export function LocalBusinessJsonLd() {
       "Сонячна енергетика",
       "Гібридні сонячні електростанції",
       "Накопичувачі енергії LiFePO4",
-      "Системи безперебійного живлення",
+      "Системи автономного живлення",
       "Зелений тариф",
     ],
     contactPoint: COMPANY.phonesRaw.map((phone, i) => ({
@@ -170,30 +170,11 @@ export function WebPageJsonLd() {
     url: BASE_URL,
     name: "RUNA SOLAR — Сонячні станції під ключ у Хмельницькому",
     description:
-      "Монтаж гібридних сонячних електростанцій, накопичувачів та ДБЖ під ключ. Хмельницький та область.",
+      "Монтаж гібридних сонячних електростанцій, накопичувачів та САЖ під ключ. Хмельницький та область.",
     inLanguage: "uk-UA",
     isPartOf: { "@id": `${BASE_URL}/#website` },
     about: { "@id": `${BASE_URL}/#business` },
     primaryImageOfPage: `${BASE_URL}/opengraph-image`,
-  };
-
-  return renderJsonLd(data);
-}
-
-/* ── FAQPage — rich snippets for questions in search ─────────────── */
-
-export function FAQJsonLd() {
-  const data = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: FAQ.map((item) => ({
-      "@type": "Question",
-      name: item.q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.a,
-      },
-    })),
   };
 
   return renderJsonLd(data);
@@ -233,12 +214,6 @@ export function BreadcrumbJsonLd() {
       {
         "@type": "ListItem",
         position: 5,
-        name: "Питання",
-        item: `${BASE_URL}/#faq`,
-      },
-      {
-        "@type": "ListItem",
-        position: 6,
         name: "Контакти",
         item: `${BASE_URL}/#contact`,
       },

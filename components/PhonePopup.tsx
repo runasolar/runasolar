@@ -1,20 +1,14 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Phone,
-  X,
-  Mail,
-  MapPin,
-  Send,
-  MessageCircle,
-  Instagram,
-  Clock,
-} from "lucide-react";
+import { Phone, X, Mail, MapPin, Clock } from "lucide-react";
 import { COMPANY } from "@/lib/data";
-
-const TIKTOK_ICON_PATH =
-  "M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V8.81a8.16 8.16 0 0 0 4.77 1.52V6.88a4.85 4.85 0 0 1-1.84-.19Z";
+import {
+  IconInstagram,
+  IconTikTok,
+  IconTelegram,
+  IconViber,
+} from "./BrandIcons";
 
 export function PhonePopup({
   open,
@@ -96,27 +90,20 @@ export function PhonePopup({
                 <ChannelBtn
                   href={`https://t.me/${COMPANY.phonesRaw[0].replace("+", "")}`}
                   label="Telegram"
-                  icon={Send}
-                />
+                >
+                  <IconTelegram className="h-6 w-6" />
+                </ChannelBtn>
                 <ChannelBtn
                   href={`viber://chat?number=${COMPANY.phonesRaw[0]}`}
                   label="Viber"
-                  icon={MessageCircle}
-                />
-                <ChannelBtn
-                  href={COMPANY.instagram}
-                  label="Instagram"
-                  icon={Instagram}
-                />
+                >
+                  <IconViber className="h-6 w-6" />
+                </ChannelBtn>
+                <ChannelBtn href={COMPANY.instagram} label="Instagram">
+                  <IconInstagram className="h-6 w-6" />
+                </ChannelBtn>
                 <ChannelBtn href={COMPANY.tiktok} label="TikTok">
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4"
-                    fill="currentColor"
-                    aria-hidden
-                  >
-                    <path d={TIKTOK_ICON_PATH} />
-                  </svg>
+                  <IconTikTok className="h-6 w-6" />
                 </ChannelBtn>
               </div>
             </div>
@@ -164,24 +151,20 @@ export function PhonePopup({
 function ChannelBtn({
   href,
   label,
-  icon: Icon,
   children,
 }: {
   href: string;
   label: string;
-  icon?: typeof Send;
-  children?: React.ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-line bg-bg py-3 text-[11px] font-medium text-ink-muted transition-all hover:border-leaf-600 hover:bg-leaf-50 hover:text-leaf-700"
+      className="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-line bg-bg py-3 text-[11px] font-medium text-ink-muted transition-all hover:border-leaf-600 hover:bg-leaf-50 hover:text-leaf-700"
     >
-      <span className="grid h-7 w-7 place-items-center text-leaf-600">
-        {Icon ? <Icon className="h-4 w-4" strokeWidth={2} /> : children}
-      </span>
+      <span className="grid h-6 w-6 place-items-center">{children}</span>
       {label}
     </a>
   );

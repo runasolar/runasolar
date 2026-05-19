@@ -1,22 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import {
   Home,
-  Building2,
-  Factory,
-  Tractor,
+  Building,
   TrendingDown,
   ShieldCheck,
   Sparkles,
-  Zap,
-  Sun,
-  Battery,
   Leaf,
-  Lightbulb,
-  Building,
-  Trees,
+  ArrowRightLeft,
   Construction,
   ArrowRight,
   ArrowLeft,
@@ -30,7 +23,7 @@ import { SectionHeader } from "./SectionHeader";
 import { COMPANY } from "@/lib/data";
 import { trackEvent } from "./Analytics";
 
-type StepId = "location" | "goal" | "reason" | "placement" | "form";
+type StepId = "location" | "goal" | "placement" | "form";
 
 const STEPS: { id: StepId; question: string; subtitle?: string }[] = [
   {
@@ -41,12 +34,7 @@ const STEPS: { id: StepId; question: string; subtitle?: string }[] = [
   {
     id: "goal",
     question: "Яка ваша основна мета встановлення?",
-    subtitle: "Допоможе підібрати між мережевою станцією, гібридом і ДБЖ",
-  },
-  {
-    id: "reason",
-    question: "Що стало вирішальним фактором?",
-    subtitle: "Зрозуміємо, на що звернути увагу при підборі",
+    subtitle: "Допоможе підібрати між мережевою станцією, гібридом і САЖ",
   },
   {
     id: "placement",
@@ -55,42 +43,48 @@ const STEPS: { id: StepId; question: string; subtitle?: string }[] = [
   },
   {
     id: "form",
-    question: "Куди передзвонити з прорахунком?",
-    subtitle: "Інженер зателефонує за 30 хвилин з готовою специфікацією",
+    question: "Інженер зателефонує за 30 хвилин з готовою специфікацією",
   },
 ];
 
-const OPTIONS = {
-  location: [
-    { id: "home", label: "Приватний будинок", icon: Home },
-    { id: "cottage", label: "Дача / котедж", icon: Trees },
-    { id: "business", label: "Бізнес / офіс", icon: Building },
-    { id: "industrial", label: "Виробництво / агро", icon: Factory },
-  ],
-  goal: [
-    { id: "save", label: "Економія на електриці", icon: TrendingDown },
-    { id: "backup", label: "Резерв на блекаут", icon: ShieldCheck },
-    { id: "both", label: "Економія + резерв", icon: Sparkles },
-    { id: "green", label: "Зелений тариф / прибуток", icon: Leaf },
-  ],
-  reason: [
-    { id: "blackouts", label: "Блекаути та відключення", icon: Lightbulb },
-    { id: "bills", label: "Високі рахунки за світло", icon: Zap },
-    { id: "independence", label: "Енергонезалежність", icon: Battery },
-    { id: "eco", label: "Екологія та ESG", icon: Leaf },
-  ],
-  placement: [
-    { id: "roof", label: "Дах будинку", icon: Home },
-    { id: "ground", label: "На землі / окрема ділянка", icon: Construction },
-    { id: "carport", label: "Навіс / гараж", icon: Building2 },
-    { id: "industrial-roof", label: "Дах цеху / агро", icon: Tractor },
-  ],
-} as const;
+type OptionItem = { id: string; label: string; icon: typeof Home };
+
+const LOCATION_OPTIONS: OptionItem[] = [
+  { id: "home", label: "Приватний будинок", icon: Home },
+  { id: "business", label: "Бізнес", icon: Building },
+];
+
+const GOAL_HOME: OptionItem[] = [
+  { id: "save", label: "Економія на електриці", icon: TrendingDown },
+  { id: "backup", label: "Резерв на блекаут", icon: ShieldCheck },
+  { id: "both", label: "Економія + резерв", icon: Sparkles },
+  { id: "green", label: "Зелений тариф / прибуток", icon: Leaf },
+];
+
+const GOAL_BUSINESS: OptionItem[] = [
+  { id: "save", label: "Економія на електриці", icon: TrendingDown },
+  { id: "backup", label: "Резерв на блекаут", icon: ShieldCheck },
+  { id: "both", label: "Економія + резерв", icon: Sparkles },
+  { id: "active", label: "Активний споживач", icon: ArrowRightLeft },
+];
+
+const PLACEMENT_OPTIONS: OptionItem[] = [
+  { id: "roof", label: "На даху", icon: Home },
+  { id: "ground", label: "На землі", icon: Construction },
+];
+
+function getOptions(stepId: StepId, answers: Answers): OptionItem[] {
+  if (stepId === "location") return LOCATION_OPTIONS;
+  if (stepId === "goal") {
+    return answers.location === "business" ? GOAL_BUSINESS : GOAL_HOME;
+  }
+  if (stepId === "placement") return PLACEMENT_OPTIONS;
+  return [];
+}
 
 type Answers = {
   location?: string;
   goal?: string;
-  reason?: string;
   placement?: string;
 };
 
@@ -135,11 +129,27 @@ export function CalculatorQuiz() {
     return Boolean(answers[current.id as keyof Answers]);
   }, [current, answers, name, phone, emailValid]);
 
+  // Track auto-advance timer so it can be cancelled by manual navigation.
+  // Without this, a stale setTimeout from a previous option click can fire
+  // after the user clicks "Назад" and push them past where they wanted to be.
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clearPendingAdvance = useCallback(() => {
+    if (advanceTimer.current !== null) {
+      clearTimeout(advanceTimer.current);
+      advanceTimer.current = null;
+    }
+  }, []);
+  useEffect(() => clearPendingAdvance, [clearPendingAdvance]);
+
   const next = () => {
+    clearPendingAdvance();
     if (!canAdvance) return;
     if (step < total - 1) setStep(step + 1);
   };
-  const prev = () => step > 0 && setStep(step - 1);
+  const prev = () => {
+    clearPendingAdvance();
+    if (step > 0) setStep(step - 1);
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -157,7 +167,6 @@ export function CalculatorQuiz() {
           email: email.trim() || undefined,
           location: answers.location,
           goal: answers.goal,
-          reason: answers.reason,
           placement: answers.placement,
         }),
       });
@@ -180,20 +189,12 @@ export function CalculatorQuiz() {
 
   const progress = ((step + (state === "ok" ? 1 : 0)) / total) * 100;
 
-  // Rough kW recommendation for the preview chip
-  const recommendedKw = useMemo(() => {
-    if (answers.location === "industrial") return 50;
-    if (answers.location === "business") return 25;
-    if (answers.location === "cottage") return 8;
-    return 12;
-  }, [answers.location]);
-
   return (
     <section id="calculator" className="section-pad bg-bg-warm/40">
       <div className="container-x">
         <Reveal>
           <SectionHeader
-            index="04 / 05"
+            index="04 / 04"
             eyebrowIcon={CalculatorIcon}
             eyebrowLabel="Розрахунок станції"
             title="Підберемо станцію за 5 кроків."
@@ -215,40 +216,29 @@ export function CalculatorQuiz() {
               </div>
               <div className="flex items-center justify-between px-6 py-4 text-xs lg:px-8">
                 <div className="flex items-center gap-2 text-ink-soft">
+                  <span className="text-[10px] uppercase tracking-[0.18em]">
+                    Етап
+                  </span>
                   <span className="h-display text-sm font-semibold tabular-nums text-ink">
                     {String(state === "ok" ? total : step + 1).padStart(2, "0")}
                   </span>
-                  <span className="text-ink-soft">
-                    / {String(total).padStart(2, "0")}
-                  </span>
                 </div>
-                {step > 0 && state !== "ok" && (
-                  <button
-                    onClick={prev}
-                    className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs text-ink-muted transition-colors hover:bg-bg-warm hover:text-ink"
-                  >
-                    <ArrowLeft className="h-3 w-3" />
-                    Назад
-                  </button>
-                )}
               </div>
             </div>
 
             {/* Step content */}
             <div className="p-6 lg:p-12">
-              <AnimatePresence mode="wait">
-                {state === "ok" ? (
-                  <SuccessScreen key="ok" name={name} phone={phone} />
-                ) : (
-                  <motion.div
-                    key={current.id}
-                    initial={{ opacity: 0, x: 24 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -24 }}
-                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  >
+              {state === "ok" ? (
+                <SuccessScreen name={name} phone={phone} />
+              ) : (
+                <motion.div
+                  key={current.id}
+                  initial={{ opacity: 0, x: 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                >
                     <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-leaf-600">
-                      Крок {step + 1}
+                      Етап {step + 1}
                     </div>
                     <h3 className="h-display mt-3 text-2xl font-semibold tracking-tight text-balance lg:text-3xl">
                       {current.question}
@@ -269,23 +259,28 @@ export function CalculatorQuiz() {
                           onName={setName}
                           onPhone={(v) => setPhone(formatPhone(v))}
                           onEmail={setEmail}
-                          recommendedKw={recommendedKw}
+                          onBack={prev}
                           state={state}
                           errorMsg={errorMsg}
                           onSubmit={submit}
                         />
                       ) : (
                         <OptionsGrid
-                          options={OPTIONS[current.id]}
+                          options={getOptions(current.id, answers)}
                           value={answers[current.id as keyof Answers]}
                           onChange={(val) => {
                             setAnswers((a) => ({
                               ...a,
                               [current.id]: val,
                             }));
-                            // Auto-advance with a short delay for visual feedback
-                            setTimeout(() => {
-                              if (step < total - 1) setStep(step + 1);
+                            // Auto-advance with a short delay for visual
+                            // feedback. Cancel any pending advance so a stale
+                            // timer from a previous step can't fire and push
+                            // past manual back/next navigation.
+                            clearPendingAdvance();
+                            advanceTimer.current = setTimeout(() => {
+                              advanceTimer.current = null;
+                              setStep((s) => (s < total - 1 ? s + 1 : s));
                             }, 350);
                           }}
                         />
@@ -294,7 +289,24 @@ export function CalculatorQuiz() {
 
                     {/* Nav buttons (only Next — Back is in header strip) */}
                     {current.id !== "form" && (
-                      <div className="mt-8 flex justify-end">
+                      <div
+                        className={`mt-8 flex items-center gap-3 ${
+                          step > 0 ? "justify-between" : "justify-end"
+                        }`}
+                      >
+                        {step > 0 && (
+                          <button
+                            type="button"
+                            onClick={prev}
+                            className="group inline-flex items-center gap-2 rounded-full border border-line bg-bg px-6 py-3 text-sm font-medium text-ink transition-all hover:border-ink hover:bg-bg-warm"
+                          >
+                            <ArrowLeft
+                              className="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+                              strokeWidth={2.5}
+                            />
+                            Назад
+                          </button>
+                        )}
                         <button
                           onClick={next}
                           disabled={!canAdvance}
@@ -308,9 +320,8 @@ export function CalculatorQuiz() {
                         </button>
                       </div>
                     )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                </motion.div>
+              )}
             </div>
           </div>
         </Reveal>
@@ -391,7 +402,7 @@ function FormStep({
   onName,
   onPhone,
   onEmail,
-  recommendedKw,
+  onBack,
   state,
   errorMsg,
   onSubmit,
@@ -403,28 +414,13 @@ function FormStep({
   onName: (v: string) => void;
   onPhone: (v: string) => void;
   onEmail: (v: string) => void;
-  recommendedKw: number;
+  onBack: () => void;
   state: "idle" | "loading" | "ok" | "error";
   errorMsg: string | null;
   onSubmit: (e: React.FormEvent) => void;
 }) {
   return (
     <form onSubmit={onSubmit} className="space-y-6">
-      {/* Pre-result chip */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-leaf-600/20 bg-leaf-50 px-5 py-4 text-sm">
-        <span className="grid h-9 w-9 place-items-center rounded-full bg-leaf-600 text-bg">
-          <Sun className="h-4 w-4" strokeWidth={2.2} />
-        </span>
-        <div>
-          <div className="text-[10px] uppercase tracking-wider text-leaf-700">
-            Орієнтовно для вас
-          </div>
-          <div className="h-display text-base font-semibold text-leaf-700">
-            Станція ~{recommendedKw} кВт
-          </div>
-        </div>
-      </div>
-
       <div>
         <label htmlFor="q-name" className="text-sm font-medium text-ink">
           Як до вас звертатись
@@ -458,7 +454,8 @@ function FormStep({
 
       <div>
         <label htmlFor="q-email" className="text-sm font-medium text-ink">
-          Email <span className="text-ink-soft">(опційно)</span>
+          Email{" "}
+          <span className="text-ink-soft">(необов'язково)</span>
         </label>
         <input
           id="q-email"
@@ -469,33 +466,46 @@ function FormStep({
           autoComplete="email"
           className="mt-2 h-14 w-full rounded-2xl border border-line bg-bg px-5 text-base outline-none transition-colors focus:border-leaf-600"
         />
-        <p className="mt-2 text-xs text-ink-soft">
-          {email.length > 0 && !emailValid
-            ? "Перевірте формат: name@domain.com"
-            : "Надішлемо підтвердження на пошту"}
-        </p>
+        {email.length > 0 && !emailValid && (
+          <p className="mt-2 text-xs text-red-600">
+            Перевірте формат: name@domain.com
+          </p>
+        )}
       </div>
 
-      <button
-        type="submit"
-        disabled={state === "loading"}
-        className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-leaf-600 px-6 py-4 text-sm font-medium text-bg transition-all hover:bg-leaf-700 disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        {state === "loading" ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Відправляємо…
-          </>
-        ) : (
-          <>
-            Отримати прорахунок
-            <ArrowRight
-              className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
-              strokeWidth={2.5}
-            />
-          </>
-        )}
-      </button>
+      <div className="flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={onBack}
+          className="group inline-flex items-center gap-2 rounded-full border border-line bg-bg px-6 py-3 text-sm font-medium text-ink transition-all hover:border-ink hover:bg-bg-warm"
+        >
+          <ArrowLeft
+            className="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+            strokeWidth={2.5}
+          />
+          Назад
+        </button>
+        <button
+          type="submit"
+          disabled={state === "loading"}
+          className="group inline-flex items-center gap-2 rounded-full bg-leaf-600 px-6 py-3 text-sm font-medium text-bg transition-all hover:bg-leaf-700 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {state === "loading" ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Відправляємо…
+            </>
+          ) : (
+            <>
+              Отримати прорахунок
+              <ArrowRight
+                className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+                strokeWidth={2.5}
+              />
+            </>
+          )}
+        </button>
+      </div>
 
       {state === "error" && (
         <div className="rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">

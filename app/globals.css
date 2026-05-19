@@ -134,6 +134,18 @@
   animation: slide-progress linear forwards;
 }
 
+/* Brand logo marquee — list rendered twice, animate -50% so the seam never shows */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee-scroll 40s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
 /* Sun ray animation for hero */
 @keyframes sun-pulse {
   0%, 100% { transform: scale(1); opacity: 0.6; }

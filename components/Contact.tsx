@@ -10,14 +10,13 @@ import {
   Home,
   Building2,
   BatteryCharging,
-  Send,
-  MessageCircle,
   Mail,
   Shield,
   Clock,
   Inbox,
   MapPin,
 } from "lucide-react";
+import { IconTelegram, IconViber } from "./BrandIcons";
 import { COMPANY } from "@/lib/data";
 import { Reveal } from "./Reveal";
 import { Magnetic } from "./Magnetic";
@@ -27,10 +26,11 @@ import { trackEvent } from "./Analytics";
 const TYPES = [
   { id: "home", label: "Дім", icon: Home },
   { id: "business", label: "Бізнес", icon: Building2 },
-  { id: "ups", label: "ДБЖ", icon: BatteryCharging },
+  { id: "ups", label: "САЖ", icon: BatteryCharging },
 ] as const;
 
 const BILL_PRESETS = [1500, 2500, 4000, 6000, 10000];
+const CONSUMPTION_PRESETS = [5, 10, 20, 30, 50];
 
 /* Format raw digits as +380 (XX) XXX-XX-XX */
 function formatPhone(value: string): string {
@@ -61,6 +61,7 @@ export function Contact() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [bill, setBill] = useState("");
+  const [consumption, setConsumption] = useState("");
   const [agree, setAgree] = useState(true);
   const [state, setState] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -87,6 +88,7 @@ export function Contact() {
           email: email.trim() || undefined,
           type,
           bill: bill || undefined,
+          consumption: consumption || undefined,
         }),
       });
       if (!res.ok) {
@@ -108,7 +110,7 @@ export function Contact() {
         <div className="overflow-hidden rounded-3xl border border-line bg-bg shadow-lift lg:rounded-4xl">
           <div className="grid lg:grid-cols-12">
             {/* ── LEFT: Manager + alternative channels ─────────────── */}
-            <div className="relative col-span-12 overflow-hidden bg-leaf-700 p-6 text-bg lg:col-span-5 lg:p-12">
+            <div className="relative order-2 col-span-12 overflow-hidden bg-leaf-700 p-6 text-bg lg:order-1 lg:col-span-5 lg:p-12">
               <div
                 aria-hidden
                 className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-sun-400/25 blur-3xl"
@@ -166,18 +168,21 @@ export function Contact() {
                       <ChannelBtn
                         href={`https://t.me/${COMPANY.phonesRaw[0].replace("+", "")}`}
                         label="Telegram"
-                        icon={Send}
-                      />
+                      >
+                        <IconTelegram className="h-4 w-4 text-sun-400" />
+                      </ChannelBtn>
                       <ChannelBtn
                         href={`viber://chat?number=${COMPANY.phonesRaw[0]}`}
                         label="Viber"
-                        icon={MessageCircle}
-                      />
+                      >
+                        <IconViber className="h-4 w-4 text-sun-400" />
+                      </ChannelBtn>
                       <ChannelBtn
                         href={`mailto:${COMPANY.email}`}
                         label="Email"
-                        icon={Mail}
-                      />
+                      >
+                        <Mail className="h-4 w-4 text-sun-400" strokeWidth={2} />
+                      </ChannelBtn>
                     </div>
                   </div>
                 </Reveal>
@@ -210,7 +215,7 @@ export function Contact() {
             </div>
 
             {/* ── RIGHT: Form ──────────────────────────────────────── */}
-            <div className="col-span-12 bg-bg p-6 lg:col-span-7 lg:p-12">
+            <div className="order-1 col-span-12 bg-bg p-6 lg:order-2 lg:col-span-7 lg:p-12">
               <AnimatePresence mode="wait">
                 {state === "ok" ? (
                   <motion.div
@@ -363,7 +368,7 @@ export function Contact() {
                       hint={
                         email.length > 0 && !emailValid
                           ? "Перевірте формат: name@domain.com"
-                          : "Опційно — надішлемо підтвердження на пошту"
+                          : "Необов'язково"
                       }
                     >
                       <input
@@ -380,7 +385,7 @@ export function Contact() {
                     {/* Monthly bill — preset chips */}
                     <Field
                       label="Місячний рахунок за світло"
-                      hint="Опційно — допоможе підготуватися до дзвінка"
+                      hint="Необов'язково"
                     >
                       <div className="flex flex-wrap gap-2">
                         {BILL_PRESETS.map((p) => (
@@ -405,6 +410,41 @@ export function Contact() {
                           value={bill}
                           onChange={(e) =>
                             setBill(e.target.value.replace(/\D/g, ""))
+                          }
+                          placeholder="свій варіант"
+                          className="w-28 rounded-full border border-line bg-bg px-3.5 py-1.5 text-xs outline-none transition-colors focus:border-leaf-600"
+                        />
+                      </div>
+                    </Field>
+
+                    {/* Monthly consumption — preset chips */}
+                    <Field
+                      label="Споживання кіловат"
+                      hint="Необов'язково"
+                    >
+                      <div className="flex flex-wrap gap-2">
+                        {CONSUMPTION_PRESETS.map((p) => (
+                          <button
+                            key={p}
+                            type="button"
+                            onClick={() =>
+                              setConsumption(consumption === `${p}` ? "" : `${p}`)
+                            }
+                            className={`rounded-full border px-3.5 py-1.5 text-xs font-medium tabular-nums transition-all ${
+                              consumption === `${p}`
+                                ? "border-leaf-600 bg-leaf-600 text-bg"
+                                : "border-line bg-bg text-ink-muted hover:border-ink hover:text-ink"
+                            }`}
+                          >
+                            {p.toLocaleString("uk-UA")} кВт
+                          </button>
+                        ))}
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          value={consumption}
+                          onChange={(e) =>
+                            setConsumption(e.target.value.replace(/\D/g, ""))
                           }
                           placeholder="свій варіант"
                           className="w-28 rounded-full border border-line bg-bg px-3.5 py-1.5 text-xs outline-none transition-colors focus:border-leaf-600"
@@ -531,11 +571,11 @@ function Field({
 function ChannelBtn({
   href,
   label,
-  icon: Icon,
+  children,
 }: {
   href: string;
   label: string;
-  icon: typeof Send;
+  children: React.ReactNode;
 }) {
   return (
     <a
@@ -544,7 +584,7 @@ function ChannelBtn({
       rel="noopener noreferrer"
       className="group flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-bg/15 bg-bg/[0.04] py-3 text-xs font-medium text-bg/80 transition-all hover:border-sun-400/60 hover:bg-bg/[0.1] hover:text-bg"
     >
-      <Icon className="h-4 w-4 text-sun-400" strokeWidth={2} />
+      {children}
       {label}
     </a>
   );

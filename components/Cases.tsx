@@ -9,8 +9,6 @@ import {
   ChevronRight,
   MapPin,
   Zap,
-  Wallet,
-  Clock,
   Briefcase,
 } from "lucide-react";
 import { CASES } from "@/lib/data";
@@ -33,20 +31,21 @@ export function Cases() {
     const el = scrollerRef.current;
     if (!el) return;
 
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8;
     setCanPrev(el.scrollLeft > 8);
-    setCanNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
+    setCanNext(!atEnd);
 
-    const cardStep = getCardStep(el);
-    // How many cards fit fully in the viewport (round handles peek/teaser)
-    const visibleCount = Math.max(1, Math.round(el.clientWidth / cardStep));
-    // Distinct snap-positions = where each non-trailing card can be leftmost
-    const total = Math.max(1, CASES.length - visibleCount + 1);
+    // Always one dot per case. Active = leftmost card index, except the
+    // tail position is sticky — when scrolled past the last reachable
+    // snap point, the final dot stays active even if maxScroll didn't
+    // line up with the last card's leftmost position (typical on tablet
+    // where each card is < 100 % viewport).
+    const total = CASES.length;
     setPositions(total);
 
-    const current = Math.min(
-      total - 1,
-      Math.max(0, Math.round(el.scrollLeft / cardStep))
-    );
+    const cardStep = getCardStep(el);
+    const fromScroll = Math.max(0, Math.round(el.scrollLeft / cardStep));
+    const current = atEnd ? total - 1 : Math.min(total - 1, fromScroll);
     setActive(current);
   }, []);
 
@@ -71,7 +70,13 @@ export function Cases() {
   const scrollToPosition = (idx: number) => {
     const el = scrollerRef.current;
     if (!el) return;
-    el.scrollTo({ left: idx * getCardStep(el), behavior: "smooth" });
+    // Clamp to maxScroll so the trailing dot still works on tablet, where
+    // i*cardStep can exceed scrollable distance.
+    const target = Math.min(
+      idx * getCardStep(el),
+      el.scrollWidth - el.clientWidth
+    );
+    el.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
   };
 
   return (
@@ -89,11 +94,11 @@ export function Cases() {
       <div className="container-x relative">
         <Reveal>
           <SectionHeader
-            index="03 / 05"
+            index="03 / 04"
             eyebrowIcon={Briefcase}
             eyebrowLabel="Реалізовані проєкти"
             title="Збудовані обʼєкти у Хмельницькій області."
-            description="Приватні будинки, готелі, виробництва й агро — реальні цифри генерації та окупності, які можна перевірити."
+            description="Кілька наших робіт у Хмельницькому — від приватних будинків до офісних центрів. Усе під ключ: від проєктування до запуску станції."
             right={
               <a href="#contact" className="btn-secondary group">
                 Хочу так само
@@ -122,8 +127,8 @@ export function Cases() {
               ))}
             </ul>
 
-            {/* Controls strip */}
-            <div className="mt-6 flex items-center justify-between gap-4 lg:mt-8">
+            {/* Controls strip — hidden on lg+ where all cards fit in a row */}
+            <div className="mt-6 flex items-center justify-between gap-4 lg:hidden">
               {/* Dots — one per reachable snap position */}
               {positions > 1 ? (
                 <div className="flex items-center gap-1.5">
@@ -186,23 +191,35 @@ function CaseCard({ c }: { c: (typeof CASES)[number] }) {
     <motion.article
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-bg shadow-soft transition-shadow duration-500 hover:shadow-lift"
+      className="group relative h-full overflow-hidden rounded-3xl shadow-soft transition-shadow duration-500 hover:shadow-lift"
     >
-      {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-bg-warm">
-        <Image
-          src={c.image}
-          alt={`Сонячна станція ${c.power} — ${c.title}, ${c.location}`}
-          fill
-          sizes="(max-width: 640px) 85vw, (max-width: 1024px) 58vw, 33vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/15 to-transparent" />
+      <div className="relative aspect-[4/5] overflow-hidden bg-bg-warm sm:aspect-[4/3]">
+        {c.video ? (
+          <video
+            src={c.video}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            aria-label={`${c.title}, ${c.location}`}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+          />
+        ) : (
+          <Image
+            src={c.image}
+            alt={`${c.title}, ${c.location}`}
+            fill
+            sizes="(max-width: 640px) 92vw, (max-width: 1024px) 60vw, 33vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/15 to-transparent" />
 
         {/* Type chip */}
         <div className="absolute left-4 top-4">
           <span
-            className={`rounded-full px-2.5 py-1 text-[11px] font-medium backdrop-blur-md ${
+            className={`rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur-md ${
               isBusiness ? "bg-ink/80 text-bg" : "bg-bg/95 text-ink"
             }`}
           >
@@ -212,73 +229,23 @@ function CaseCard({ c }: { c: (typeof CASES)[number] }) {
 
         {/* Power chip */}
         <div className="absolute right-4 top-4">
-          <span className="h-display inline-flex items-center gap-1 rounded-full bg-sun-500 px-3 py-1 text-sm font-bold tabular-nums text-ink shadow-soft">
+          <span className="h-display inline-flex items-center gap-1 rounded-full bg-sun-500 px-3 py-1.5 text-sm font-bold tabular-nums text-ink shadow-soft">
             <Zap className="h-3.5 w-3.5" strokeWidth={2.5} />
             {c.power}
           </span>
         </div>
 
-        {/* Title overlay */}
-        <div className="absolute inset-x-5 bottom-5">
+        {/* Location overlay */}
+        <div className="absolute inset-x-5 bottom-5 lg:inset-x-6 lg:bottom-6">
           <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.16em] text-bg/80">
             <MapPin className="h-3 w-3" />
-            {c.location.split(",")[0]}
+            Локація
           </div>
-          <h3 className="h-display mt-1.5 text-lg font-semibold leading-tight text-bg lg:text-xl">
-            {c.title.split(",")[0]}
-          </h3>
+          <div className="h-display mt-1.5 text-lg font-semibold leading-tight text-bg lg:text-xl">
+            {c.location}
+          </div>
         </div>
-      </div>
-
-      {/* Footer */}
-      <div className="flex flex-1 flex-col gap-4 p-5 lg:p-6">
-        {/* Two-metric strip */}
-        <ul className="grid grid-cols-2 gap-3">
-          <Metric icon={Wallet} label="Економія" value={c.savings.replace(" / рік", "/рік")} />
-          <Metric icon={Clock} label="Окупність" value={c.payback} />
-        </ul>
-
-        {/* Quote */}
-        <p className="line-clamp-2 text-sm text-ink-muted text-pretty">
-          “{c.quote}” <span className="text-ink-soft">— {c.client}</span>
-        </p>
-
-        {/* Bottom: Детальніше */}
-        <a
-          href="#contact"
-          className="mt-auto inline-flex items-center justify-between gap-2 rounded-full border border-line bg-bg-warm/40 px-4 py-3 text-sm font-medium text-ink transition-all hover:border-leaf-600 hover:bg-leaf-50 hover:text-leaf-700"
-        >
-          Детальніше про проєкт
-          <ArrowUpRight
-            className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-            strokeWidth={2}
-          />
-        </a>
       </div>
     </motion.article>
-  );
-}
-
-function Metric({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Zap;
-  label: string;
-  value: string;
-}) {
-  return (
-    <li className="rounded-2xl border border-line bg-bg-warm/40 p-3">
-      <div className="flex items-center gap-1.5">
-        <Icon className="h-3 w-3 shrink-0 text-leaf-600" strokeWidth={2} />
-        <div className="truncate text-[9px] uppercase tracking-wider text-ink-soft">
-          {label}
-        </div>
-      </div>
-      <div className="h-display mt-1 truncate text-sm font-semibold tabular-nums leading-tight text-ink">
-        {value}
-      </div>
-    </li>
   );
 }
