@@ -134,13 +134,20 @@
   animation: slide-progress linear forwards;
 }
 
-/* Brand logo marquee — list rendered twice, animate -50% so the seam never shows */
+/* Brand logo marquee — list rendered twice, animate -50% so the seam never shows.
+   Each cell has fixed width (set in JSX) so the track's total width is deterministic
+   from first paint — image decode never reshapes the track and the -50% endpoint
+   stays pixel-stable. `contain` isolates the track from page-level layout/paint so
+   nothing outside can stall its compositor frames. */
 @keyframes marquee-scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
 }
 .marquee-track {
-  animation: marquee-scroll 40s linear infinite;
+  animation: marquee-scroll 45s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  contain: layout paint;
 }
 .marquee-track:hover {
   animation-play-state: paused;

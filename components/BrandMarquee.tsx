@@ -1,17 +1,15 @@
-"use client";
-
-import Image from "next/image";
 import { BRANDS } from "@/lib/data";
 
 /**
- * Auto-scrolling logo wall (marquee).
+ * Auto-scrolling logo wall.
  *
  * Loop trick: render the full list twice and animate translateX(-50 %) over
- * the wrapper. When the first copy scrolls out of view, the second copy is
- * already in place, so the user never sees a "jump".
+ * the wrapper. At -50 % the visible content is byte-identical to the 0 %
+ * position, so the loop is seamless.
  *
- * Brands with a logo path render the SVG via next/image. The rest fall back
- * to a wordmark in the brand-family display font.
+ * Uses plain `<img>` (not next/image) so there's no placeholder/lazy-load
+ * layout shift mid-scroll — a major source of judder when one logo finishes
+ * loading after the animation has started.
  */
 export function BrandMarquee() {
   // Double the list for a seamless infinite loop
@@ -39,28 +37,30 @@ export function BrandMarquee() {
           className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-bg via-bg/60 to-transparent lg:w-28"
         />
 
-        <div className="marquee-track flex w-max items-center gap-12 lg:gap-20">
-          {items.map((b, i) =>
-            b.logo ? (
-              <Image
-                key={`${b.name}-${i}`}
-                src={b.logo}
-                alt={b.name}
-                width={200}
-                height={48}
-                aria-hidden={i >= BRANDS.length}
-                className="h-10 w-auto shrink-0 select-none object-contain lg:h-12"
-              />
-            ) : (
-              <span
-                key={`${b.name}-${i}`}
-                aria-hidden={i >= BRANDS.length}
-                className="h-display select-none whitespace-nowrap text-xl font-bold tracking-tight text-ink lg:text-2xl"
-              >
-                {b.name}
-              </span>
-            )
-          )}
+        <div className="marquee-track flex w-max items-center gap-10 lg:gap-16">
+          {items.map((b, i) => (
+            <div
+              key={`${b.name}-${i}`}
+              aria-hidden={i >= BRANDS.length}
+              className="flex h-12 w-32 shrink-0 items-center justify-center lg:h-14 lg:w-40"
+            >
+              {b.logo ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={b.logo}
+                  alt={b.name}
+                  loading="eager"
+                  decoding="async"
+                  draggable={false}
+                  className="max-h-full max-w-full select-none object-contain"
+                />
+              ) : (
+                <span className="h-display select-none whitespace-nowrap text-xl font-bold tracking-tight text-ink lg:text-2xl">
+                  {b.name}
+                </span>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </section>
