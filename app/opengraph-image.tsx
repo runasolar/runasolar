@@ -84,19 +84,19 @@ export default async function OGImage() {
         >
           <div
             style={{
-              fontSize: 76,
+              fontSize: 64,
               fontWeight: 700,
               lineHeight: 1.05,
               letterSpacing: -1,
               textTransform: "uppercase",
               display: "flex",
               flexWrap: "wrap",
-              gap: 18,
+              gap: 16,
             }}
           >
-            <span>Чиста,</span>
-            <span>безпечна,</span>
-            <span style={{ color: "#E8B340" }}>відновлювана</span>
+            <span>Ваша енергонезалежність</span>
+            <span>під ключ з</span>
+            <span style={{ color: "#3F7350" }}>RUNA SOLAR</span>
           </div>
           <div
             style={{
@@ -107,8 +107,8 @@ export default async function OGImage() {
               display: "flex",
             }}
           >
-            Сонячні станції, накопичувачі та САЖ під ключ для дому й бізнесу.
-            Tier-1 обладнання · Хмельницький та область
+            Сонячні станції, накопичувачі енергії та системи автономного
+            живлення під ключ — Хмельницький та область
           </div>
         </div>
 
