@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Check, LayoutGrid } from "lucide-react";
-import { useRef } from "react";
+import { ArrowRight, Check, LayoutGrid } from "lucide-react";
+import { useRef, useState } from "react";
 import { SERVICES } from "@/lib/data";
 import { Reveal } from "./Reveal";
 import { SectionHeader } from "./SectionHeader";
+import { StorageModesModal } from "./StorageModesModal";
 
 export function Services() {
   return (
@@ -71,22 +72,19 @@ function ServiceCard({
     offset: ["start end", "end start"],
   });
   const imageY = useTransform(scrollYProgress, [0, 1], [-12, 12]);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const img = SERVICE_IMAGES[service.id] ?? SERVICE_IMAGES.home;
 
   const isDark = variant === "dark";
+  const isStorage = service.id === "storage";
 
-  return (
-    <a
-      ref={ref as React.RefObject<HTMLAnchorElement>}
-      href="#contact"
-      aria-label={`${service.title} — залишити заявку`}
-      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift ${
-        isDark
-          ? "bg-ink text-bg"
-          : "border border-line bg-bg"
-      }`}
-    >
+  const cardClass = `group relative flex h-full flex-col overflow-hidden rounded-3xl shadow-soft transition-all duration-500 hover:-translate-y-1 hover:shadow-lift ${
+    isDark ? "bg-ink text-bg" : "border border-line bg-bg"
+  }`;
+
+  const cardBody = (
+    <>
       {/* Image */}
       <div className="relative aspect-[16/10] overflow-hidden bg-bg-warm">
         <motion.div style={{ y: imageY }} className="absolute inset-0 scale-[1.18]">
@@ -105,7 +103,6 @@ function ServiceCard({
               : "bg-gradient-to-t from-bg/40 via-transparent to-transparent"
           }`}
         />
-
       </div>
 
       {/* Content */}
@@ -149,7 +146,49 @@ function ServiceCard({
           ))}
         </ul>
 
+        {isStorage && (
+          <button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            className={`mt-auto inline-flex w-fit items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-medium transition-colors ${
+              isDark
+                ? "border-bg/30 text-bg hover:border-bg hover:bg-bg/10"
+                : "border-leaf-200 bg-leaf-50 text-leaf-700 hover:border-leaf-600 hover:bg-leaf-600 hover:text-bg"
+            }`}
+          >
+            Детальніше
+            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.5} />
+          </button>
+        )}
       </div>
+    </>
+  );
+
+  if (isStorage) {
+    return (
+      <>
+        <article
+          ref={ref as React.RefObject<HTMLElement>}
+          className={cardClass}
+        >
+          {cardBody}
+        </article>
+        <StorageModesModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+        />
+      </>
+    );
+  }
+
+  return (
+    <a
+      ref={ref as React.RefObject<HTMLAnchorElement>}
+      href="#contact"
+      aria-label={`${service.title} — залишити заявку`}
+      className={cardClass}
+    >
+      {cardBody}
     </a>
   );
 }
