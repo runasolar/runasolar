@@ -44,7 +44,7 @@ export const BRANDS: {
   { name: "LONGi", category: "panel", logo: "/brands/longi.png" },
   { name: "JinkoSolar", category: "panel", logo: "/brands/jinko.svg" },
   { name: "JA Solar", category: "panel", logo: "/brands/jasolar.svg" },
-  { name: "Tongwei", category: "panel", logo: "/brands/tongwei.webp" },
+  { name: "TW Solar", category: "panel", logo: "/brands/tw-solar.webp" },
   { name: "Trina Solar", category: "panel", logo: "/brands/trina.svg" },
   { name: "Risen Energy", category: "panel", logo: "/brands/risen.webp" },
   { name: "Dah Solar", category: "panel", logo: "/brands/dahsolar.webp" },

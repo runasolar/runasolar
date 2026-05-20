@@ -5,14 +5,13 @@ import { motion } from "framer-motion";
 import {
   Home,
   Building,
-  TrendingDown,
   ShieldCheck,
   Sparkles,
   Leaf,
   ArrowRightLeft,
   Construction,
-  Factory,
-  LineChart,
+  Sun,
+  BatteryCharging,
   ArrowRight,
   ArrowLeft,
   Check,
@@ -57,19 +56,21 @@ const LOCATION_OPTIONS: OptionItem[] = [
 ];
 
 const GOAL_HOME: OptionItem[] = [
-  { id: "save", label: "Економія на електриці", icon: TrendingDown },
+  { id: "self", label: "На власне споживання", icon: Sun },
   { id: "backup", label: "Резерв на блекаут", icon: ShieldCheck },
   { id: "both", label: "Економія + резерв", icon: Sparkles },
   { id: "green", label: "Зелений тариф / прибуток", icon: Leaf },
 ];
 
 const GOAL_BUSINESS: OptionItem[] = [
-  { id: "save", label: "Економія на електриці", icon: TrendingDown },
   { id: "backup", label: "Резерв на блекаут", icon: ShieldCheck },
   { id: "both", label: "Економія + резерв", icon: Sparkles },
   { id: "active", label: "Активний споживач", icon: ArrowRightLeft },
-  { id: "self", label: "На власне споживання", icon: Factory },
-  { id: "arbitrage", label: "Арбітраж на ринку", icon: LineChart },
+  {
+    id: "storage_arbitrage",
+    label: "Установка зберігання енергії: на власне споживання або арбітраж на ринку",
+    icon: BatteryCharging,
+  },
 ];
 
 const PLACEMENT_OPTIONS: OptionItem[] = [

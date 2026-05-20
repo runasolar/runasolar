@@ -104,16 +104,16 @@ export function Header() {
               />
             </a>
 
-            <nav className="hidden items-center gap-0.5 lg:flex">
+            <nav className="hidden items-center gap-2.5 lg:flex">
               {NAV.map((item) => (
                 <a
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "rounded-full px-3.5 py-2 text-[15px] font-medium transition-colors",
+                    "rounded-full border px-3.5 py-1.5 text-[14px] font-medium transition-colors",
                     pastHero
-                      ? "text-bg hover:bg-bg/10"
-                      : "text-ink-muted hover:bg-bg-warm hover:text-ink"
+                      ? "border-bg/20 bg-bg/10 text-bg hover:border-bg/40 hover:bg-bg/20"
+                      : "border-leaf-100 bg-leaf-50 text-leaf-700 hover:border-leaf-600 hover:bg-leaf-600 hover:text-bg"
                   )}
                 >
                   {item.label}

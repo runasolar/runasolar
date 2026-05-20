@@ -23,13 +23,13 @@ const LABELS: Record<string, Record<string, string>> = {
     business: "Бізнес",
   },
   goal: {
-    save: "Економія на електриці",
     backup: "Резерв на блекаут",
     both: "Економія + резерв",
     green: "Зелений тариф / прибуток",
     active: "Активний споживач",
     self: "На власне споживання",
-    arbitrage: "Арбітраж на ринку",
+    storage_arbitrage:
+      "Установка зберігання енергії: на власне споживання або арбітраж на ринку",
   },
   placement: {
     roof: "На даху",
