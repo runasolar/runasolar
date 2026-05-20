@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Unbounded } from "next/font/google";
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { Analytics } from "@/components/Analytics";
 import { CookieBanner } from "@/components/CookieBanner";
@@ -126,6 +127,7 @@ export default function RootLayout({
         <Analytics />
         {children}
         <CookieBanner />
+        <SpeedInsights />
       </body>
     </html>
   );
