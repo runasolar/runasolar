@@ -63,6 +63,7 @@ const GOAL_HOME: OptionItem[] = [
 ];
 
 const GOAL_BUSINESS: OptionItem[] = [
+  { id: "self", label: "На власне споживання", icon: Sun },
   { id: "backup", label: "Резерв на блекаут", icon: ShieldCheck },
   { id: "both", label: "Економія + резерв", icon: Sparkles },
   { id: "active", label: "Активний споживач", icon: ArrowRightLeft },
@@ -405,7 +406,7 @@ function OptionsGrid({
             {active && (
               <motion.span
                 layoutId="active-check"
-                className="ml-auto grid h-6 w-6 place-items-center rounded-full bg-leaf-600 text-bg"
+                className="ml-auto grid h-6 w-6 shrink-0 place-items-center rounded-full bg-leaf-600 text-bg"
               >
                 <Check className="h-3.5 w-3.5" strokeWidth={3} />
               </motion.span>
