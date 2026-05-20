@@ -70,7 +70,7 @@ function ServiceCard({
     target: ref,
     offset: ["start end", "end start"],
   });
-  const imageY = useTransform(scrollYProgress, [0, 1], [-20, 20]);
+  const imageY = useTransform(scrollYProgress, [0, 1], [-12, 12]);
 
   const img = SERVICE_IMAGES[service.id] ?? SERVICE_IMAGES.home;
 
@@ -89,7 +89,7 @@ function ServiceCard({
     >
       {/* Image */}
       <div className="relative aspect-[16/10] overflow-hidden bg-bg-warm">
-        <motion.div style={{ y: imageY }} className="absolute inset-0 scale-110">
+        <motion.div style={{ y: imageY }} className="absolute inset-0 scale-[1.18]">
           <Image
             src={img}
             alt={`${service.title} — ${service.description.split(".")[0]}`}

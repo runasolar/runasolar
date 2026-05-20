@@ -27,8 +27,8 @@ const SLIDE_IMAGES = [
 
 const HERO = {
   eyebrow: "Альтернативна енергетика",
-  titleStart: "ЧИСТА, БЕЗПЕЧНА,",
-  titleHighlight: "ВІДНОВЛЮВАНА",
+  titleLead: "ВАША ЕНЕРГОНЕЗАЛЕЖНІСТЬ ПІД КЛЮЧ З",
+  titleBrand: "RUNA SOLAR",
   descriptionLead:
     "Основний профіль компанії RUNA SOLAR — сонячні електростанції, системи автономного живлення та накопичувачі енергії під ключ.",
   descriptionBody:
@@ -91,7 +91,7 @@ export function HeroSlider() {
           </motion.div>
         ))}
         <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/65 to-ink/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/55 via-ink/20 to-ink/85" />
       </div>
 
       <div className="container-x relative">
@@ -102,9 +102,9 @@ export function HeroSlider() {
               <span className="h-px w-8 bg-sun-400/70" />
               {HERO.eyebrow}
             </div>
-            <h1 className="h-display mt-5 text-[clamp(2rem,5.2vw,4.75rem)] font-semibold uppercase leading-[1.05] tracking-tight text-balance">
-              {HERO.titleStart}{" "}
-              <span className="text-sun-400">{HERO.titleHighlight}</span>
+            <h1 className="h-display mt-5 text-[clamp(1.25rem,3vw,2.5rem)] font-semibold uppercase leading-[1.05] tracking-tight text-balance text-bg">
+              {HERO.titleLead}{" "}
+              <span className="text-leaf-500">{HERO.titleBrand}</span>
             </h1>
             <div className="mt-6 max-w-xl space-y-4 text-base text-bg/80 text-pretty sm:text-lg">
               <p>{HERO.descriptionLead}</p>
