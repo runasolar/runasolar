@@ -17,7 +17,7 @@ type LeadPayload = {
 };
 
 const LABELS: Record<string, Record<string, string>> = {
-  type: { home: "Дім", business: "Бізнес", ups: "САЖ" },
+  type: { home: "Дім", apartment: "Квартира", business: "Бізнес", ups: "САЖ" },
   location: {
     home: "Приватний будинок",
     business: "Бізнес",
@@ -28,6 +28,8 @@ const LABELS: Record<string, Record<string, string>> = {
     both: "Економія + резерв",
     green: "Зелений тариф / прибуток",
     active: "Активний споживач",
+    self: "На власне споживання",
+    arbitrage: "Арбітраж на ринку",
   },
   placement: {
     roof: "На даху",

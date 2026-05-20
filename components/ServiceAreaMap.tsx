@@ -237,24 +237,6 @@ export default function ServiceAreaMap() {
       </MapContainer>
 
       <style jsx global>{`
-        /* Restore native Leaflet cursors */
-        html.cursor-hidden .rs-map.leaflet-container,
-        html.cursor-hidden .rs-map.leaflet-container * {
-          cursor: grab !important;
-        }
-        html.cursor-hidden .rs-map.leaflet-container.leaflet-dragging,
-        html.cursor-hidden .rs-map.leaflet-container.leaflet-dragging * {
-          cursor: grabbing !important;
-        }
-        html.cursor-hidden .rs-map .leaflet-interactive,
-        html.cursor-hidden .rs-map .leaflet-marker-icon,
-        html.cursor-hidden .rs-map .leaflet-marker-icon *,
-        html.cursor-hidden .rs-map .leaflet-popup,
-        html.cursor-hidden .rs-map .leaflet-popup *,
-        html.cursor-hidden .rs-map .leaflet-control-zoom a {
-          cursor: pointer !important;
-        }
-
         .rs-map.leaflet-container {
           font-family: var(--font-sans);
           font-size: 13px;

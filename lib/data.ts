@@ -33,14 +33,15 @@ export const BRANDS: {
   logo?: string;
 }[] = [
   // Inverters & batteries
-  { name: "Huawei", category: "inverter", logo: "/brands/huawei.svg" },
-  { name: "Solis", category: "inverter", logo: "/brands/solis.svg" },
+  { name: "Huawei", category: "inverter", logo: "/brands/huawei.png" },
+  { name: "Solis", category: "inverter", logo: "/brands/solis.png" },
   { name: "Solax", category: "inverter", logo: "/brands/solax.webp" },
   { name: "FOX ESS", category: "inverter", logo: "/brands/foxess.webp" },
   { name: "Deye", category: "inverter", logo: "/brands/deye.webp" },
   { name: "Victron", category: "inverter", logo: "/brands/victron.svg" },
   { name: "Fronius", category: "inverter", logo: "/brands/fronius.svg" },
   // Solar panels
+  { name: "LONGi", category: "panel", logo: "/brands/longi.png" },
   { name: "JinkoSolar", category: "panel", logo: "/brands/jinko.svg" },
   { name: "JA Solar", category: "panel", logo: "/brands/jasolar.svg" },
   { name: "Tongwei", category: "panel", logo: "/brands/tongwei.webp" },
@@ -78,7 +79,7 @@ export const SERVICES = [
     range: "30–500 кВт",
     priceFrom: "за прорахунком",
     description:
-      "Промислові гібриди з резервом для виробництв, готелів, СТО та агро. Окупність 2–6 років, нижчі рахунки за електрику та робота обладнання навіть у блекаут.",
+      "Це рішення для зменшення витрат на електроенергію, підвищення енергонезалежності та стабільної роботи підприємства навіть в умовах перебоїв у мережі.",
     bullets: [
       "Окупність 2–6 років",
       "Економія на електроенергії",

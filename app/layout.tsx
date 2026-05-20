@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Unbounded } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
-import { CursorGlow } from "@/components/CursorGlow";
 import { Analytics } from "@/components/Analytics";
 import { CookieBanner } from "@/components/CookieBanner";
 import {
@@ -124,7 +123,6 @@ export default function RootLayout({
       </head>
       <body>
         <SmoothScroll />
-        <CursorGlow />
         <Analytics />
         {children}
         <CookieBanner />

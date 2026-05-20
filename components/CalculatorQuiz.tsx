@@ -11,6 +11,8 @@ import {
   Leaf,
   ArrowRightLeft,
   Construction,
+  Factory,
+  LineChart,
   ArrowRight,
   ArrowLeft,
   Check,
@@ -66,6 +68,8 @@ const GOAL_BUSINESS: OptionItem[] = [
   { id: "backup", label: "Резерв на блекаут", icon: ShieldCheck },
   { id: "both", label: "Економія + резерв", icon: Sparkles },
   { id: "active", label: "Активний споживач", icon: ArrowRightLeft },
+  { id: "self", label: "На власне споживання", icon: Factory },
+  { id: "arbitrage", label: "Арбітраж на ринку", icon: LineChart },
 ];
 
 const PLACEMENT_OPTIONS: OptionItem[] = [
@@ -90,22 +94,41 @@ type Answers = {
 
 const TARIFF = 4.32;
 
+const PHONE_STUB = "+380 (";
+
 function formatPhone(value: string): string {
   const raw = value.replace(/\D/g, "");
+  if (raw.length === 0) return "";
   let digits = raw;
   if (digits.startsWith("380")) digits = digits.slice(3);
-  if (digits.startsWith("0")) digits = digits.slice(1);
+  else if (digits.startsWith("0")) digits = digits.slice(1);
   digits = digits.slice(0, 9);
-  if (digits.length === 0) return "";
   const p1 = digits.slice(0, 2);
   const p2 = digits.slice(2, 5);
   const p3 = digits.slice(5, 7);
   const p4 = digits.slice(7, 9);
-  let s = `+380 (${p1}`;
+  let s = `${PHONE_STUB}${p1}`;
   if (p2) s += `) ${p2}`;
   if (p3) s += `-${p3}`;
   if (p4) s += `-${p4}`;
   return s;
+}
+
+function handlePhoneChange(
+  next: string,
+  current: string,
+  setter: (v: string) => void,
+) {
+  const formatted = formatPhone(next);
+  if (
+    next.length < current.length &&
+    formatted === PHONE_STUB &&
+    next.length < PHONE_STUB.length
+  ) {
+    setter("");
+    return;
+  }
+  setter(formatted);
 }
 const isValidPhone = (v: string) => v.replace(/\D/g, "").length >= 12;
 
@@ -257,7 +280,7 @@ export function CalculatorQuiz() {
                           email={email}
                           emailValid={emailValid}
                           onName={setName}
-                          onPhone={(v) => setPhone(formatPhone(v))}
+                          onPhone={(v) => handlePhoneChange(v, phone, setPhone)}
                           onEmail={setEmail}
                           onBack={prev}
                           state={state}

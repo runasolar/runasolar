@@ -8,8 +8,8 @@ import {
   Check,
   Loader2,
   Home,
+  Building,
   Building2,
-  BatteryCharging,
   Mail,
   Shield,
   Clock,
@@ -25,30 +25,53 @@ import { trackEvent } from "./Analytics";
 
 const TYPES = [
   { id: "home", label: "Дім", icon: Home },
+  { id: "apartment", label: "Квартира", icon: Building },
   { id: "business", label: "Бізнес", icon: Building2 },
-  { id: "ups", label: "САЖ", icon: BatteryCharging },
 ] as const;
 
 const BILL_PRESETS = [1500, 2500, 4000, 6000, 10000];
-const CONSUMPTION_PRESETS = [5, 10, 20, 30, 50];
+const CONSUMPTION_PRESETS = [300, 600, 1000, 2000, 4000];
 
-/* Format raw digits as +380 (XX) XXX-XX-XX */
+const PHONE_STUB = "+380 (";
+
+/* Format raw digits as +380 (XX) XXX-XX-XX.
+   Strips ONE country prefix only — either "380" or a single leading "0" —
+   so the second "0" the user types becomes the start of the operator code. */
 function formatPhone(value: string): string {
   const raw = value.replace(/\D/g, "");
+  if (raw.length === 0) return "";
   let digits = raw;
   if (digits.startsWith("380")) digits = digits.slice(3);
-  if (digits.startsWith("0")) digits = digits.slice(1);
+  else if (digits.startsWith("0")) digits = digits.slice(1);
   digits = digits.slice(0, 9);
-  if (digits.length === 0) return "";
   const p1 = digits.slice(0, 2);
   const p2 = digits.slice(2, 5);
   const p3 = digits.slice(5, 7);
   const p4 = digits.slice(7, 9);
-  let s = `+380 (${p1}`;
+  let s = `${PHONE_STUB}${p1}`;
   if (p2) s += `) ${p2}`;
   if (p3) s += `-${p3}`;
   if (p4) s += `-${p4}`;
   return s;
+}
+
+/* Let the user backspace OUT of the "+380 (" stub (past the open paren)
+   to clear the field — but keep the stub when they're just deleting a digit. */
+function handlePhoneChange(
+  next: string,
+  current: string,
+  setter: (v: string) => void,
+) {
+  const formatted = formatPhone(next);
+  if (
+    next.length < current.length &&
+    formatted === PHONE_STUB &&
+    next.length < PHONE_STUB.length
+  ) {
+    setter("");
+    return;
+  }
+  setter(formatted);
 }
 
 function isValidPhone(value: string): boolean {
@@ -353,7 +376,9 @@ export function Contact() {
                         required
                         type="tel"
                         value={phone}
-                        onChange={(e) => setPhone(formatPhone(e.target.value))}
+                        onChange={(e) =>
+                          handlePhoneChange(e.target.value, phone, setPhone)
+                        }
                         placeholder="+380 (__) ___-__-__"
                         autoComplete="tel"
                         className="h-14 w-full rounded-2xl border border-line bg-bg px-5 text-base tabular-nums outline-none transition-colors focus:border-leaf-600"
