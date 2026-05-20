@@ -26,7 +26,6 @@ const SLIDE_IMAGES = [
 ];
 
 const HERO = {
-  eyebrow: "Альтернативна енергетика",
   titleLead: "ВАША ЕНЕРГОНЕЗАЛЕЖНІСТЬ ПІД КЛЮЧ З",
   titleBrand: "RUNA SOLAR",
   descriptionLead:
@@ -98,11 +97,7 @@ export function HeroSlider() {
         <div className="flex min-h-[640px] flex-col justify-end pb-12 pt-32 sm:min-h-[720px] sm:pb-16 sm:pt-36 lg:min-h-[760px] lg:pb-24 lg:pt-40">
           {/* Static content — same on every slide */}
           <div className="max-w-3xl">
-            <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-sun-400">
-              <span className="h-px w-8 bg-sun-400/70" />
-              {HERO.eyebrow}
-            </div>
-            <h1 className="h-display mt-5 text-[clamp(1.25rem,3vw,2.5rem)] font-semibold uppercase leading-[1.05] tracking-tight text-balance text-bg">
+            <h1 className="h-display text-[clamp(1.25rem,3vw,2.5rem)] font-semibold uppercase leading-[1.05] tracking-tight text-balance text-bg">
               {HERO.titleLead}{" "}
               <span className="text-leaf-500">{HERO.titleBrand}</span>
             </h1>
