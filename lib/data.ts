@@ -120,6 +120,7 @@ export const CASES: CaseItem[] = [
     type: "Дім",
     power: "12 кВт",
     image: "/projects/private-home.webp",
+    video: "/projects/loc-2.mp4",
   },
   {
     title: "Приватний дім, Хмельницький",
@@ -127,6 +128,7 @@ export const CASES: CaseItem[] = [
     type: "Дім",
     power: "6 кВт",
     image: "/projects/private-home-2.webp",
+    video: "/projects/loc-2.mp4",
   },
   {
     title: "Офісний центр, Хмельницький",
