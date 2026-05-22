@@ -131,7 +131,7 @@ export const CASES: CaseItem[] = [
     type: "Дім",
     power: "6 кВт",
     image: "/projects/private-home-2.webp",
-    video: "/projects/loc-2.mp4",
+    video: "/projects/loc-3-new.mp4",
   },
   {
     title: "Офісний центр, Хмельницький",
