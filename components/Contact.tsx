@@ -189,7 +189,7 @@ export function Contact() {
                     </div>
                     <div className="mt-3 grid grid-cols-3 gap-2">
                       <ChannelBtn
-                        href={`https://t.me/${COMPANY.phonesRaw[0].replace("+", "")}`}
+                        href={`https://t.me/${COMPANY.telegramPhone}`}
                         label="Telegram"
                       >
                         <IconTelegram className="h-4 w-4 text-sun-400" />

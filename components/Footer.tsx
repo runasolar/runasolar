@@ -87,7 +87,7 @@ export function Footer() {
                   <IconTikTok className="h-4 w-4" />
                 </SocialBtn>
                 <SocialBtn
-                  href={`https://t.me/${COMPANY.phonesRaw[0].replace("+", "")}`}
+                  href={`https://t.me/${COMPANY.telegramPhone}`}
                   label="Telegram"
                 >
                   <IconTelegram className="h-4 w-4" />

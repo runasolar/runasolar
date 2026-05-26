@@ -88,7 +88,7 @@ export function PhonePopup({
               </div>
               <div className="mt-3 grid grid-cols-4 gap-2">
                 <ChannelBtn
-                  href={`https://t.me/${COMPANY.phonesRaw[0].replace("+", "")}`}
+                  href={`https://t.me/${COMPANY.telegramPhone}`}
                   label="Telegram"
                 >
                   <IconTelegram className="h-6 w-6" />
