@@ -4,7 +4,7 @@ export const COMPANY = {
   tagline: "Сонячні станції, що не вимикаються разом зі світлом",
   phones: ["+380 67 791 97 97", "+380 63 663 88 99"],
   phonesRaw: ["+380677919797", "+380636638899"],
-  telegramPhone: "+380678591202",
+  telegramPhone: "+380677919797",
   instagram: "https://www.instagram.com/runasolar_/",
   tiktok: "https://www.tiktok.com/@runasolar_",
   email: "runasolarua@gmail.com",
