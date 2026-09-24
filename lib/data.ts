@@ -17,7 +17,9 @@ export const COMPANY = {
   postalCode: "29027",
   // Direct Google Maps share link to our office pin
   mapsUrl: "https://maps.app.goo.gl/iPAC3vpiqqqgTLvA7",
-  workingHours: "Пн–Сб, 9:00–19:00",
+  // Google Business Profile "leave a review" link
+  googleReviewUrl: "https://g.page/r/CWQrYhKERW74EBM/review",
+  workingHours: "Пн–Пт 9:00–19:00, Сб 10:00–17:00",
 };
 
 export const NAV = [
@@ -151,34 +153,3 @@ export const CASES: CaseItem[] = [
     video: "/projects/loc-4.mp4",
   },
 ];
-
-export const TESTIMONIALS = [
-  {
-    name: "Андрій М.",
-    role: "Власник дому",
-    location: "Хмельницький, вул. Прибузька",
-    project: "Гібрид 12 кВт + 10 кВт·год",
-    date: "Лютий 2026",
-    rating: 5,
-    text: "Команда зробила все за 4 дні. Через тиждень я вже бачив у застосунку, скільки виробляє станція. Чесні цифри, чесні люди — і світло у блекаут не зникає.",
-  },
-  {
-    name: "Олена К.",
-    role: "Власниця готелю",
-    location: "Хмельницький, район Виставка",
-    project: "Гібрид 25 кВт + 20 кВт·год",
-    date: "Січень 2026",
-    rating: 5,
-    text: "Раніше блекаут означав втрачених гостей і скарги. Зараз гості навіть не помічають перемикання — все плавно. Окупність вийшла рівно як обіцяли при першій зустрічі.",
-  },
-  {
-    name: "Петро С.",
-    role: "Власник цеху",
-    location: "Хмельницький, район Дубове",
-    project: "Гібрид 40 кВт + 30 кВт·год",
-    date: "Грудень 2025",
-    rating: 5,
-    text: "Холодильні камери — це не іграшка. Хлопці порахували все по-чесному, поставили швидко, документи зробили самі. Я тільки підписав папери і отримав ключі від нової реальності.",
-  },
-];
-

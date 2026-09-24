@@ -15,6 +15,7 @@ import {
   Clock,
   Inbox,
   MapPin,
+  Star,
 } from "lucide-react";
 import { IconTelegram, IconViber } from "./BrandIcons";
 import { COMPANY } from "@/lib/data";
@@ -230,6 +231,29 @@ export function Contact() {
                       </div>
                       <div className="mt-1 text-[11px] text-sun-400">
                         Відкрити в Google Maps →
+                      </div>
+                    </div>
+                  </a>
+                </Reveal>
+
+                {/* Google review request */}
+                <Reveal delay={0.3}>
+                  <a
+                    href={COMPANY.googleReviewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackEvent("review_click", { source: "contact" })}
+                    className="mt-3 flex items-center gap-3 rounded-2xl border border-bg/15 bg-bg/[0.04] p-4 transition-all hover:border-sun-400/50 hover:bg-bg/[0.08]"
+                  >
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-bg/10 text-sun-400">
+                      <Star className="h-4 w-4" strokeWidth={2.2} />
+                    </span>
+                    <div className="flex-1">
+                      <div className="text-sm text-bg">
+                        Вже встановили станцію з нами?
+                      </div>
+                      <div className="mt-1 text-[11px] text-sun-400">
+                        Залиште відгук у Google →
                       </div>
                     </div>
                   </a>

@@ -8,6 +8,7 @@ import {
   MapPin,
   Clock,
   ArrowUpRight,
+  Star,
 } from "lucide-react";
 import { COMPANY } from "@/lib/data";
 import { LegalModal, type LegalDocKey } from "./LegalModal";
@@ -183,6 +184,17 @@ export function Footer() {
                       {COMPANY.addressCity}, {COMPANY.postalCode}
                     </span>
                   </span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={COMPANY.googleReviewUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-start gap-2.5 text-sm text-bg/85 transition-colors hover:text-sun-400"
+                >
+                  <Star className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-sun-400" />
+                  Залишити відгук у Google
                 </a>
               </li>
             </ul>

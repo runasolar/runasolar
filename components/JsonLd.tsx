@@ -1,4 +1,4 @@
-import { COMPANY, SERVICES, TESTIMONIALS } from "@/lib/data";
+import { COMPANY, SERVICES } from "@/lib/data";
 import { SITE_URL as BASE_URL } from "@/lib/site";
 
 /* ── Helpers ──────────────────────────────────────────────────────── */
@@ -15,12 +15,6 @@ function renderJsonLd(data: unknown) {
 /* ── LocalBusiness — critical for Local Pack / Google Maps ───────── */
 
 export function LocalBusinessJsonLd() {
-  const reviewCount = TESTIMONIALS.length;
-  const avgRating =
-    Math.round(
-      (TESTIMONIALS.reduce((s, t) => s + t.rating, 0) / reviewCount) * 10
-    ) / 10;
-
   // LocalBusiness IS-A Organization (Schema.org hierarchy) — declaring both
   // @types on one node prevents Google from auto-merging two separate
   // entities that share name/logo into a single display node with
@@ -100,35 +94,22 @@ export function LocalBusinessJsonLd() {
           "Wednesday",
           "Thursday",
           "Friday",
-          "Saturday",
         ],
         opens: "09:00",
         closes: "19:00",
       },
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: "Saturday",
+        opens: "10:00",
+        closes: "17:00",
+      },
     ],
-    sameAs: [COMPANY.instagram, COMPANY.tiktok],
+    sameAs: [COMPANY.mapsUrl, COMPANY.instagram, COMPANY.tiktok],
     priceRange: "$$",
     currenciesAccepted: "UAH, USD",
     paymentAccepted: "Готівка, безготівковий розрахунок, розстрочка",
     knowsLanguage: ["uk", "en"],
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: avgRating.toFixed(1),
-      reviewCount,
-      bestRating: 5,
-      worstRating: 1,
-    },
-    review: TESTIMONIALS.map((t) => ({
-      "@type": "Review",
-      author: { "@type": "Person", name: t.name },
-      reviewRating: {
-        "@type": "Rating",
-        ratingValue: t.rating,
-        bestRating: 5,
-      },
-      reviewBody: t.text,
-      datePublished: t.date,
-    })),
     makesOffer: SERVICES.map((s) => ({
       "@type": "Offer",
       itemOffered: {
